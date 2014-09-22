@@ -21,7 +21,7 @@
     },
     "target-dir" : "Juice/UploadBundle",
     "repositories" : [{
-    ],
+    }],
     "extra" : {
         "branch-alias" : {
             "master" : "0.1-dev"

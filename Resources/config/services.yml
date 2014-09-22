@@ -1,0 +1,15 @@
+parameters:
+#    juice_upload.example.class: Juice\UploadBundle\Example
+
+services:
+    juice_upload_bundle.image_type:
+        class: Juice\UploadBundle\Form\Type\ImageType
+        tags:
+            - { name: form.type, alias: image_type }
+        arguments: [ "@liip_imagine.filter.manager" ]
+
+    juice_upload_bundle.twig.file_extension:
+        class: Juice\UploadBundle\Twig\FileExtension
+        tags:
+            - { name: twig.extension }
+        arguments: [ "@liip_imagine.filter.manager" ]

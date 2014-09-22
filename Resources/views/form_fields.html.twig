@@ -1,0 +1,91 @@
+{% block gallery_collection_widget %}
+    {% spaceless %}
+        <div class="upload_file_container" data-prototype="{{ form_widget(form.vars.prototype) | e }}" {% for key, value in form.vars.attr %}{{ key }}="{{ value }}" {% endfor %}>
+
+            <div class="controls clearfix">
+                <!-- The fileinput-button span is used to style the file input field as button -->
+                <div class="upload_button_container">
+                    <span class="btn btn-primary fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>Dodaj zdjęcia</span>
+                        <!-- The file input field used as target for the file upload widget -->
+                        <input id="fileupload" class="file_upload" type="file" name="file" multiple data-form-kind="image" data-options="crop">
+                    </span>
+                </div>
+
+                <!-- The global progress bar -->
+                <div id="progress" class="progress">
+                    <div class="progress-bar progress-bar-success"></div>
+                </div>
+            </div>
+
+            <div class="gallery_container clearfix">
+                {% for fields in form %}
+                    <div class="gallery_item upload_photo_container">
+                        <div class="featured_layer"></div>
+                        <div class="edit_layer">
+                            <div class="buttons">
+                                <div class="button remove"><span class="glyphicon glyphicon-remove"></span></div>
+                            </div>
+                        </div>
+                        <div class="preview">
+                            {% if fields.vars.value.id %}
+                                <img src="/media/{{ fields.vars.value.photo }}" />
+                            {%  else %}
+                                <img src="/uploads/{{ fields.vars.value.photo }}" />
+                            {%  endif %}
+                            
+                        </div>
+                        <div class="hidden_form upload_form">{{ form_widget(fields) }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endspaceless %}
+{% endblock gallery_collection_widget %}
+
+{% block image_type_widget %}
+    <div class="upload_file_container" {% for key, value in form.vars.attr %}{{ key }}="{{ value }}" {% endfor %} data-input-name="{{ form.vars.full_name }}">
+        <div class="controls clearfix">
+            <!-- The fileinput-button span is used to style the file input field as button -->
+            <div class="upload_button_container">
+                <span class="btn btn-primary fileinput-button">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>Dodaj zdjęcie</span>
+                    <!-- The file input field used as target for the file upload widget -->
+                    <input id="fileupload" class="file_upload" type="file" name="file">
+                </span>
+            </div>
+
+            <!-- The global progress bar -->
+            <div id="progress" class="progress">
+                <div class="progress-bar progress-bar-success"></div>
+            </div>
+        </div>
+
+        <div class="upload_photo_container">
+            <div class="featured_layer"></div>
+            <div class="edit_layer">
+                <div class="buttons">
+                    <div class="button remove"><span class="glyphicon glyphicon-remove"></span></div>
+                </div>
+            </div>
+            <div class="preview">
+                {% if form.vars.value %}
+                    {% set finalPath = final_upload_dir ~ "/" ~ form.vars.value %}
+                    {% set tmpPath = tmp_upload_dir ~ "/" ~ form.vars.value %}
+
+                    {% if form.parent.vars.value.id and finalPath | checkFile %}
+                        <img src="/{{ finalPath }}" />
+                    {%  elseif tmpPath | checkFile%}
+                        <img src="/{{ tmpPath }}" />
+                    {%  else %}
+                        Image ERROR!!!
+                    {%  endif %}
+                    <div class="hidden_form upload_form">{{ form_widget(form) }}</div>
+                {%  endif %}
+            </div>
+        </div>
+        <hr>
+    </div>
+{% endblock image_type_widget %}

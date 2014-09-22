@@ -1,0 +1,30 @@
+{
+    "name" : "juice/uploadbundle",
+    "description" : "Upload bundle",
+    "type" : "symfony-bundle",
+    "authors" : [{
+        "name" : "juice",
+        "email" : "mateusz@juice.pl"
+    }],
+    "keywords" : [
+        "upload bundle"
+    ],
+    "license" : [
+        "MIT"
+    ],
+    "require" : {
+    },
+    "autoload" : {
+        "psr-0" : {
+            "Juice\\UploadBundle" : ""
+        }
+    },
+    "target-dir" : "Juice/UploadBundle",
+    "repositories" : [{
+    ],
+    "extra" : {
+        "branch-alias" : {
+            "dev-master" : "0.1-dev"
+        }
+    }
+}

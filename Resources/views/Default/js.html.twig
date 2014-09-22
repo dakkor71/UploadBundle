@@ -1,0 +1,17 @@
+<script>
+    window.config = {
+        'final_upload_dir': '{{ final_upload_dir }}' + '/',
+        'tmp_upload_dir': '{{ tmp_upload_dir }}' + '/'
+    };
+</script>
+
+{% javascripts
+    '@JuiceUploadBundle/Resources/public/js/upload/vendor/jquery.ui.widget.js'
+    '@JuiceUploadBundle/Resources/public/js/upload/jquery.iframe-transport.js'
+    '@JuiceUploadBundle/Resources/public/js/upload/jquery.fileupload.js'
+    '@JuiceUploadBundle/Resources/public/js/libs/jquery.Jcrop.js'
+    '@JuiceUploadBundle/Resources/public/js/upload.js'
+%}
+<script type="text/javascript" src="{{ asset_url }}"></script>
+{% endjavascripts %}
+

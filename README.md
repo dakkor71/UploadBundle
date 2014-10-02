@@ -1,25 +1,23 @@
-Documentation
+##Documentation
 
-========================
-parameters.yml
-========================
+###parameters.yml
 
 add tmp and final folders
 
+``` yaml
 tmp_upload_dir : uploads
 final_upload_dir : media
+```
 
 
 
-========================
-config.yml
-========================
+###config.yml
 
 add to config
 
+``` yaml
 assetic:
     bundles: [ 'JuiceUploadBundle' ]
-
 
 twig:
     # ...
@@ -29,19 +27,20 @@ twig:
     form:
         resources:
             - 'JuiceUploadBundle::form_fields.html.twig'
+```
 
-
-========================
-cms.html.twig
-========================
+###cms.html.twig
 
 Add CSS to site:
 
+``` html
 {{ include('JuiceUploadBundle:Default:css.html.twig') }}
+```
 
 Add JS to site (remember to include JS after (backbone, underscore) and before you init upload object):
 TODO: change this to something simpler
 
+``` html
 {% javascripts
     '@NHBBackendBundle/Resources/public/js/bootstrap.js'
     '@JuicejQueryBundle/Resources/public/js/libs/underscore.js'
@@ -57,163 +56,178 @@ TODO: change this to something simpler
 {% javascripts '@NHBBackendBundle/Resources/public/js/admin.js' %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
 {% endjavascripts %}
+```
 
-========================
-GALLERY
-========================
+###GALLERY
 
-First create gallery item entity (point $collection targetEntity to your gallery entity):
+###First create gallery item entity (point $collection targetEntity to your gallery entity):
 
-    <?php
+``` php
+<?php
 
-    namespace Demo\DemoBundle\Entity;
+namespace Demo\DemoBundle\Entity;
 
-    use Doctrine\ORM\Mapping as ORM;
-    use Juice\UploadBundle\Model\CollectionItem as BaseCollectionItem;
+use Doctrine\ORM\Mapping as ORM;
+use Juice\UploadBundle\Model\CollectionItem as BaseCollectionItem;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="gallery_item")
+ * @ORM\HasLifecycleCallbacks
+ */
+class GalleryItem extends BaseCollectionItem
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
 
     /**
-     * @ORM\Entity
-     * @ORM\Table(name="gallery_item")
-     * @ORM\HasLifecycleCallbacks
+     * @ORM\ManyToOne(targetEntity="Gallery", inversedBy="items")
+     * @ORM\JoinColumn(name="gallery_id", referencedColumnName="id")
      */
-    class GalleryItem extends BaseCollectionItem
-    {
-        /**
-         * @ORM\Id
-         * @ORM\Column(type="integer")
-         * @ORM\GeneratedValue(strategy="AUTO")
-         */
-        protected $id;
+    protected $collection;
+}
 
-        /**
-         * @ORM\ManyToOne(targetEntity="Gallery", inversedBy="items")
-         * @ORM\JoinColumn(name="gallery_id", referencedColumnName="id")
-         */
-        protected $collection;
-    }
+?>
+```
 
-    ?>
+###Create Gallery Entity:
 
-Create Gallery Entity:
+1) Add to entity header:
 
-    - Add to entity header:
+``` php
+use Juice\UploadBundle\Model\Collection as BaseCollection;
+```
 
-        use Juice\UploadBundle\Model\Collection as BaseCollection;
+2) Extend gallery class:
 
-    - Extend gallery class:
+``` php
+class Gallery extends BaseCollection
+```
 
-        class Gallery extends BaseCollection
+3) Connect gallery with you GalleryItem entity
 
-    - Connect gallery with you GalleryItem entity
+``` php
+/**
+ * @ORM\OneToMany(targetEntity="GalleryItem", mappedBy="collection", cascade={"persist", "remove"})
+ * @ORM\OrderBy({"position" = "ASC", "id" = "DESC"})
+ */
+protected $items;
+```
 
-        /**
-         * @ORM\OneToMany(targetEntity="GalleryItem", mappedBy="collection", cascade={"persist", "remove"})
-         * @ORM\OrderBy({"position" = "ASC", "id" = "DESC"})
-         */
-        protected $items;
+3) add constructor and setter
 
-    - add constructor and setter
+``` php
+public function __construct()
+{
+    $this->items = new ArrayCollection();
+}
 
-        public function __construct()
-        {
-            $this->items = new ArrayCollection();
-        }
+public function addItem(GalleryItem $item)
+{
+    $this->items->add($item);
+    $item->setCollection($this);
 
-        public function addItem(GalleryItem $item)
-        {
-            $this->items->add($item);
-            $item->setCollection($this);
+    return $this;
+}
+```
 
-            return $this;
-        }
+4) Add to form:
 
-Add to form:
+#####min options
+``` php
+->add('photo', 'juice_single_image_field', array(
+    'required' => false,
+    'by_reference' => false,
+    'field_attr' => array(
+        'filter' => 'home_big',
+    )
+))
+```        
 
-    - min options
+#####full options
 
-        ->add('photo', 'juice_single_image_field', array(
-            'required' => false,
-            'by_reference' => false,
-            'field_attr' => array(
-                'filter' => 'home_big',
-            )
-        ))
+``` php
+->add('photo', 'juice_single_image_field', array(
+    'required' => false,
+    'by_reference' => false,
+    'label' => main label name',
+    'button_label' => 'button name', // DEFAULT default 'Upload' | upload button label
+    'field_attr' => array(
+        'filter' => 'home_big', // REQUIRED | liip imagine filter which we want to use
+        'data-form-kind' => 'image', // DEFAULT 'image' | if type is defined as image, controller will return dimensions arter upload
+        'data-callback' => 'handleSingleImage', // DEFAULT 'handleSingleImage' | which js function will be triggered after upload
+        'data-crop' => 'true' // DEFAULT default 'false' | if image should be croped (if image is same size as liip filter, it wont be croped)
+    )
+))
+```
 
-    - full options
-
-        ->add('photo', 'juice_single_image_field', array(
-            'required' => false,
-            'by_reference' => false,
-            'label' => main label name',
-            'button_label' => 'button name', // DEFAULT default 'Upload' | upload button label
-            'field_attr' => array(
-                'filter' => 'home_big', // REQUIRED | liip imagine filter which we want to use
-                'data-form-kind' => 'image', // DEFAULT 'image' | if type is defined as image, controller will return dimensions arter upload
-                'data-callback' => 'handleSingleImage', // DEFAULT 'handleSingleImage' | which js function will be triggered after upload
-                'data-crop' => 'true' // DEFAULT default 'false' | if image should be croped (if image is same size as liip filter, it wont be croped)
-            )
-        ))
-
-========================
-SINGLE PHOTO
-========================
+###SINGLE PHOTO
 
 Add to entity (photo is default name):
 
-    /**
-     * @ORM\OneToOne(targetEntity="\Juice\UploadBundle\Entity\Media", cascade={"persist", "remove"}, orphanRemoval=true)
-     * @ORM\JoinColumn(name="image_id", referencedColumnName="id", onDelete="SET NULL", nullable=true)
-     */
-    private $photo;
+``` php
+/**
+ * @ORM\OneToOne(targetEntity="\Juice\UploadBundle\Entity\Media", cascade={"persist", "remove"}, orphanRemoval=true)
+ * @ORM\JoinColumn(name="image_id", referencedColumnName="id", onDelete="SET NULL", nullable=true)
+ */
+private $photo;
 
-    public function setPhoto($photo)
-    {
-        if ($photo == NULL || $photo->getFile() == NULL) {
-            $this->photo = NULL;
-        } else {
-            $this->photo = $photo;
-        }
-        return $this;
+public function setPhoto($photo)
+{
+    if ($photo == NULL || $photo->getFile() == NULL) {
+        $this->photo = NULL;
+    } else {
+        $this->photo = $photo;
     }
+    return $this;
+}
 
-    public function getPhoto()
-    {
-        return $this->photo;
-    }
+public function getPhoto()
+{
+    return $this->photo;
+}
+```
 
 Add to form:
 
-    - min options
+#####min options
 
-        ->add('photo', 'juice_single_image_field', array(
-            'required' => false,
-            'by_reference' => false,
-            'field_attr' => array(
-                'filter' => 'home_big',
-            )
-        ))
+``` php
+->add('photo', 'juice_single_image_field', array(
+    'required' => false,
+    'by_reference' => false,
+    'field_attr' => array(
+        'filter' => 'home_big',
+    )
+))
+```
 
-    - full options
+#####full options
 
-        ->add('photo', 'juice_single_image_field', array(
-            'required' => false,
-            'by_reference' => false,
-            'label' => main label name',
-            'button_label' => 'button name', // DEFAULT default 'Upload' | upload button label
-            'field_attr' => array(
-                'filter' => 'home_big', // REQUIRED | liip imagine filter which we want to use
-                'data-form-kind' => 'image', // DEFAULT 'image' | if type is defined as image, controller will return dimensions arter upload
-                'data-callback' => 'handleSingleImage', // DEFAULT 'handleSingleImage' | which js function will be triggered after upload
-                'data-crop' => 'true' // DEFAULT default 'false' | if image should be croped (if image is same size as liip filter, it wont be croped)
-            )
-        ))
+``` php
+->add('photo', 'juice_single_image_field', array(
+    'required' => false,
+    'by_reference' => false,
+    'label' => main label name',
+    'button_label' => 'button name', // DEFAULT default 'Upload' | upload button label
+    'field_attr' => array(
+        'filter' => 'home_big', // REQUIRED | liip imagine filter which we want to use
+        'data-form-kind' => 'image', // DEFAULT 'image' | if type is defined as image, controller will return dimensions arter upload
+        'data-callback' => 'handleSingleImage', // DEFAULT 'handleSingleImage' | which js function will be triggered after upload
+        'data-crop' => 'true' // DEFAULT default 'false' | if image should be croped (if image is same size as liip filter, it wont be croped)
+    )
+))
+```
 
-========================
-SINGLE FILE
-========================
+###SINGLE FILE
 
-Add to entity (file is default name):
+####Add to entity (file is default name):
 
+``` php
 /**
  *
  * @ORM\OneToOne(targetEntity="\Juice\UploadBundle\Entity\Media", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -236,18 +250,22 @@ public function getFile()
 {
     return $this->file;
 }
+```
 
-Add to form:
+####Add to form:
 
-(min options)
+#####min options
 
+``` php
 ->add('file', 'juice_single_file_field', array(
     'required' => false,
     'by_reference' => false
 ))
+```
 
-(full options)
+#####full options
 
+``` php
 ->add('file', 'juice_single_file_field', array(
     'required' => false,
     'by_reference' => false,
@@ -257,5 +275,6 @@ Add to form:
         'data-callback' => 'handleSingleFile' // DEFAULT 'handleSingleFile' | which js function will be triggered after upload
     )
 ))
+```
 
 

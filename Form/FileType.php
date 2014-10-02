@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class ImageType extends AbstractType
+class FileType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -18,7 +18,7 @@ class ImageType extends AbstractType
         $buttonLabel = $options['button_label'];
 
         $builder
-            ->add('file', 'juice_image_type', array(
+            ->add('file', 'juice_file_type', array(
                 'button_label' => $buttonLabel,
                 'attr' => $attr
             ))
@@ -45,6 +45,6 @@ class ImageType extends AbstractType
      */
     public function getName()
     {
-        return 'juice_single_image_field';
+        return 'juice_single_file_field';
     }
 }

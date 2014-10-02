@@ -4,16 +4,16 @@ namespace Juice\UploadBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Juice\UploadBundle\Lib\Globals;
-use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
 
 /**
  * Image
  *
- * @ORM\Table(name="image")
+ * @ORM\Table(name="media")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  */
-class Image
+class Media
 {
     protected $temp;
 
@@ -45,12 +45,12 @@ class Image
 
     protected function getFinalUploadRootDir()
     {
-        return __DIR__ . '/../../../../web/' . $this->getFinalFolderName();
+        return __DIR__ . '/../../../../../../web/' . $this->getFinalFolderName();
     }
 
     protected function getTmpUploadRootDir($path)
     {
-        return __DIR__ . '/../../../../web/' . $this->getTmpFolderName() . '/' . $path;
+        return __DIR__ . '/../../../../../../web/' . $this->getTmpFolderName() . '/' . $path;
     }
 
     public function removeFile()
@@ -79,8 +79,8 @@ class Image
             return;
         }
 
-        if (!$file instanceof File) {
-            $file = new File($this->getTmpUploadRootDir($file));
+        if (!$file instanceof SymfonyFile) {
+            $file = new SymfonyFile($this->getTmpUploadRootDir($file));
         }
 
         $file->move($this->getFinalUploadRootDir(), $this->getTmpUploadRootDir($file));
@@ -109,15 +109,15 @@ class Image
      * @ORM\PostPersist()
      * @ORM\PostUpdate()
      */
-    public function preFlush()
+    public function postFlush()
     {
         $this->upload();
     }
 
     /**
-     * @ORM\PostRemove()
+     * @ORM\PreRemove()
      */
-    public function postRemove()
+    public function preRemove()
     {
         $this->removeFile();
     }

@@ -2,11 +2,46 @@ parameters:
 #    juice_upload.example.class: Juice\UploadBundle\Example
 
 services:
-    juice_upload_bundle.image_type:
-        class: Juice\UploadBundle\Form\Type\ImageType
+    #fields
+    juice_upload_bundle.juice_single_image_field:
+        class: Juice\UploadBundle\Form\ImageType
         tags:
-            - { name: form.type, alias: image_type }
+            - { name: form.type, alias: juice_single_image_field }
         arguments: [ "@liip_imagine.filter.manager" ]
+
+    juice_upload_bundle.juice_single_file_field:
+        class: Juice\UploadBundle\Form\FileType
+        tags:
+            - { name: form.type, alias: juice_single_file_field }
+        arguments: [ "@liip_imagine.filter.manager" ]
+
+    #types
+    juice_upload_bundle.juice_image_type:
+        class: Juice\UploadBundle\Form\Type\AbstractImageType
+        tags:
+            - { name: form.type, alias: juice_image_type }
+        arguments: [ "@liip_imagine.filter.manager" ]
+
+    juice_upload_bundle.juice_file_type:
+        class: Juice\UploadBundle\Form\Type\AbstractFileType
+        tags:
+            - { name: form.type, alias: juice_file_type }
+
+    juice_upload_bundle.juice_gallery_collection:
+        class: Juice\UploadBundle\Form\Type\GalleryCollectionType
+        tags:
+            - { name: form.type, alias: juice_gallery_collection }
+        arguments: [ "@liip_imagine.filter.manager" ]
+
+    juice_upload_bundle.juice_gallery_item_type:
+        class: Juice\UploadBundle\Form\Type\GalleryItemType
+        tags:
+            - { name: form.type, alias: juice_gallery_item_type }
+        arguments: [ "@liip_imagine.filter.manager" ]
+
+
+
+
 
     juice_upload_bundle.twig.file_extension:
         class: Juice\UploadBundle\Twig\FileExtension

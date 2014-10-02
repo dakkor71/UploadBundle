@@ -1,76 +1,94 @@
-{% block gallery_collection_widget %}
+{% block form_row %}
     {% spaceless %}
-        <div class="upload_file_container" data-prototype="{{ form_widget(form.vars.prototype) | e }}" {% for key, value in form.vars.attr %}{{ key }}="{{ value }}" {% endfor %}>
+        {% if attr.class is defined %}
+            {% set attr = attr | merge({'class' : attr.class ~ ' form-control'}) %}
+        {% else %}
+            {% set attr = attr | merge({'class' : 'form-control'}) %}
+        {% endif %}
+        <div class="form-group clearfix">
+            {{ form_label(form) }}
+            {{ form_widget(form, { 'attr': attr }) }}
+            {{ form_errors(form) }}
+        </div>
+    {% endspaceless %}
+{% endblock form_row %}
 
-            <div class="controls clearfix">
-                <!-- The fileinput-button span is used to style the file input field as button -->
-                <div class="upload_button_container">
-                    <span class="btn btn-primary fileinput-button">
-                        <i class="glyphicon glyphicon-plus"></i>
-                        <span>Dodaj zdjęcia</span>
-                        <!-- The file input field used as target for the file upload widget -->
-                        <input id="fileupload" class="file_upload" type="file" name="file" multiple data-form-kind="image" data-options="crop">
-                    </span>
-                </div>
+{% block form_errors %}
+    {% spaceless %}
+        {% if errors|length > 0 %}
+            {% for error in errors %}
+                <div class="label label-danger">{{ error.message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endspaceless %}
+{% endblock form_errors %}
 
-                <!-- The global progress bar -->
-                <div id="progress" class="progress">
-                    <div class="progress-bar progress-bar-success"></div>
-                </div>
-            </div>
+{% block controls %}
+    <div class="juice_upload_controls clearfix">
+        <!-- The fileinput-button span is used to style the file input field as button -->
+        <div class="juice_upload_button_container">
+            <span class="btn btn-primary fileinput-button">
+                <i class="glyphicon glyphicon-plus"></i>
+                <span>{{ form.vars.button_label }}</span>
 
-            <div class="gallery_container clearfix">
-                {% for fields in form %}
-                    <div class="gallery_item upload_photo_container">
-                        <div class="featured_layer"></div>
-                        <div class="edit_layer">
-                            <div class="buttons">
-                                <div class="button remove"><span class="glyphicon glyphicon-remove"></span></div>
+                <!-- The file input field used as target for the file upload widget -->
+                <input class="file_upload" type="file" name="file" {% if form.vars.multi | default(false) %}multiple{% endif %}>
+            </span>
+        </div>
+
+        <div class="juice_upload_progress_container">
+            <div class="percent"></div>
+            <span class="glyphicon glyphicon-refresh spin"></span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block juice_gallery_collection_widget %}
+    {% spaceless %}
+        <div class="form-control {{ form.vars.upload_class }}">
+            <div class="juice_upload_container clearfix" data-prototype="{{ form_widget(form.vars.prototype) | e }}" {% for key, value in form.vars.attr %}{{ key }}="{{ value }}" {% endfor %}>
+
+                {{ block('controls') }}
+
+                <div class="juice_upload_collection_container clearfix">
+                    {% for fields in form %}
+                        <div class="juice_upload_item">
+                            <div class="featured_layer"></div>
+                            <div class="edit_layer">
+                                <div class="buttons">
+                                    <div class="button remove"><span class="glyphicon glyphicon-remove"></span></div>
+                                </div>
                             </div>
+                            <div class="preview">
+                                {% if fields.vars.value.id %}
+                                    <img src="/media/{{ fields.vars.value.photo }}" />
+                                {%  else %}
+                                    <img src="/uploads/{{ fields.vars.value.photo }}" />
+                                {%  endif %}
+
+                            </div>
+                            <div class="hidden_form upload_form">{{ form_widget(fields) }}</div>
                         </div>
-                        <div class="preview">
-                            {% if fields.vars.value.id %}
-                                <img src="/media/{{ fields.vars.value.photo }}" />
-                            {%  else %}
-                                <img src="/uploads/{{ fields.vars.value.photo }}" />
-                            {%  endif %}
-                            
-                        </div>
-                        <div class="hidden_form upload_form">{{ form_widget(fields) }}</div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
     {% endspaceless %}
-{% endblock gallery_collection_widget %}
+{% endblock juice_gallery_collection_widget %}
 
-{% block image_type_widget %}
-    <div class="upload_file_container" {% for key, value in form.vars.attr %}{{ key }}="{{ value }}" {% endfor %} data-input-name="{{ form.vars.full_name }}">
-        <div class="controls clearfix">
-            <!-- The fileinput-button span is used to style the file input field as button -->
-            <div class="upload_button_container">
-                <span class="btn btn-primary fileinput-button">
-                    <i class="glyphicon glyphicon-plus"></i>
-                    <span>Dodaj zdjęcie</span>
-                    <!-- The file input field used as target for the file upload widget -->
-                    <input id="fileupload" class="file_upload" type="file" name="file">
-                </span>
-            </div>
+{% block juice_image_type_widget %}
+    <div class="juice_upload_container clearfix" {% for key, value in form.vars.attr %}{{ key }}="{{ value }}" {% endfor %} data-input-name="{{ form.vars.full_name }}">
+    
+        {{ block('controls') }}
 
-            <!-- The global progress bar -->
-            <div id="progress" class="progress">
-                <div class="progress-bar progress-bar-success"></div>
-            </div>
-        </div>
-
-        <div class="upload_photo_container">
+        <div class="juice_upload_item single_item">
             <div class="featured_layer"></div>
             <div class="edit_layer">
                 <div class="buttons">
                     <div class="button remove"><span class="glyphicon glyphicon-remove"></span></div>
                 </div>
             </div>
-            <div class="preview">
+            <div class="preview juice_upload_form_container">
                 {% if form.vars.value %}
                     {% set finalPath = final_upload_dir ~ "/" ~ form.vars.value %}
                     {% set tmpPath = tmp_upload_dir ~ "/" ~ form.vars.value %}
@@ -82,10 +100,29 @@
                     {%  else %}
                         Image ERROR!!!
                     {%  endif %}
-                    <div class="hidden_form upload_form">{{ form_widget(form) }}</div>
+                    <div class="hidden_form">{{ form_widget(form) }}</div>
                 {%  endif %}
             </div>
         </div>
-        <hr>
     </div>
-{% endblock image_type_widget %}
+{% endblock juice_image_type_widget %}
+
+{% block juice_file_type_widget %}
+    <div class="juice_upload_container clearfix" {% for key, value in form.vars.attr %}{{ key }}="{{ value }}" {% endfor %} data-input-name="{{ form.vars.full_name }}">
+
+    {{ block('controls') }}
+
+        <div class="juice_upload_item single_item ">
+            <div class="juice_upload_form_container">
+            {% if form.vars.value %}
+                <div class="alert alert-success juice_upload_single_file" role="alert">{{ form.vars.value }}<div class="button remove"><span class="glyphicon glyphicon-remove"></span></div></div>
+                <div class="hidden_form">{{ form_widget(form) }}</div>
+            {%  endif %}
+            </div>
+        </div>
+    </div>
+{% endblock juice_file_type_widget %}
+
+{% block juice_gallery_item_type_widget %}
+    {#<div class="hidden_form upload_form">{{ form_widget(form) }}</div>#}
+{% endblock juice_gallery_item_type_widget %}

@@ -1,51 +1,46 @@
-yo yo yo !!
-
-TODO calosc jest pisana przy pomocy backbone oraz bootstrap i trzeba zapewnic aby byly zamieszczone w projekcie - tutaj moze jakis require.js by sie przydal lub cus innego
-
-TODO projekt wykouzystuje liip imagine i bez niego ani rusz, mozna by pomyslec czy nie da sie zrobic jakiegos defaultowego handlera co cropuje po stronie php i nie wymaga instalacji liip imagine
+Documentation
 
 ========================
 parameters.yml
 ========================
-dodac foldery tmp i final
 
-    tmp_upload_dir : uploads
-    final_upload_dir : media
+add tmp and final folders
+
+tmp_upload_dir : uploads
+final_upload_dir : media
 
 
 
 ========================
 config.yml
 ========================
-trzeba dodac tutaj taki wpis aby mogl compilowac CSS i JS z includowanych plików
+
+add to config
 
 assetic:
     bundles: [ 'JuiceUploadBundle' ]
 
-trzeba dodać do twiga globalne zmienne
 
 twig:
     # ...
     globals:
         tmp_upload_dir: "%tmp_upload_dir%"
         final_upload_dir: "%final_upload_dir%"
-
+    form:
+        resources:
+            - 'JuiceUploadBundle::form_fields.html.twig'
 
 
 ========================
 cms.html.twig
 ========================
-( lub inny glowny template CMS'a ) dodajemy CSS i JS odpowiedzialne za upload + crop
-TODO Wymaga to niestety aby scrypt odpalajacy wrzucic pod koniec i jest niewygodne (przyklad ponizej)
-W js.html.twig tworzony jest tez config i mozna z tych wartosci kozystac w swoim skrypcie
 
+Add CSS to site:
 
 {{ include('JuiceUploadBundle:Default:css.html.twig') }}
-{{ include('JuiceUploadBundle:Default:js.html.twig') }}
 
-=========
-PRZYKŁAD:
-=========
+Add JS to site (remember to include JS after (backbone, underscore) and before you init upload object):
+TODO: change this to something simpler
 
 {% javascripts
     '@NHBBackendBundle/Resources/public/js/bootstrap.js'
@@ -64,52 +59,203 @@ PRZYKŁAD:
 {% endjavascripts %}
 
 ========================
-UploadBundle - form_fields.html.twig
+GALLERY
 ========================
-jest tam rozszerzenie formsow ktore zamienia inputy w przyciski do uploadu.
-TODO Narazie tylko singleImage jest powiedzmy ze gotowe galleryCollection można by dopracować pod katem rozszerzalnosci.
-TODO Mam tutaj na mysli sama galerie ale rownierz wrzucanie kolekcji plików oraz roznego rodzaju dodatkowe pola textowe. ponizej kod pozwalajacy dodac kilka templatek do forma
 
-{% form_theme form with ['NHBBackendBundle::form_fields.html.twig', 'JuiceUploadBundle::form_fields.html.twig'] %}
+First create gallery item entity (point $collection targetEntity to your gallery entity):
+
+    <?php
+
+    namespace Demo\DemoBundle\Entity;
+
+    use Doctrine\ORM\Mapping as ORM;
+    use Juice\UploadBundle\Model\CollectionItem as BaseCollectionItem;
+
+    /**
+     * @ORM\Entity
+     * @ORM\Table(name="gallery_item")
+     * @ORM\HasLifecycleCallbacks
+     */
+    class GalleryItem extends BaseCollectionItem
+    {
+        /**
+         * @ORM\Id
+         * @ORM\Column(type="integer")
+         * @ORM\GeneratedValue(strategy="AUTO")
+         */
+        protected $id;
+
+        /**
+         * @ORM\ManyToOne(targetEntity="Gallery", inversedBy="items")
+         * @ORM\JoinColumn(name="gallery_id", referencedColumnName="id")
+         */
+        protected $collection;
+    }
+
+    ?>
+
+Create Gallery Entity:
+
+    - Add to entity header:
+
+        use Juice\UploadBundle\Model\Collection as BaseCollection;
+
+    - Extend gallery class:
+
+        class Gallery extends BaseCollection
+
+    - Connect gallery with you GalleryItem entity
+
+        /**
+         * @ORM\OneToMany(targetEntity="GalleryItem", mappedBy="collection", cascade={"persist", "remove"})
+         * @ORM\OrderBy({"position" = "ASC", "id" = "DESC"})
+         */
+        protected $items;
+
+    - add constructor and setter
+
+        public function __construct()
+        {
+            $this->items = new ArrayCollection();
+        }
+
+        public function addItem(GalleryItem $item)
+        {
+            $this->items->add($item);
+            $item->setCollection($this);
+
+            return $this;
+        }
+
+Add to form:
+
+    - min options
+
+        ->add('photo', 'juice_single_image_field', array(
+            'required' => false,
+            'by_reference' => false,
+            'field_attr' => array(
+                'filter' => 'home_big',
+            )
+        ))
+
+    - full options
+
+        ->add('photo', 'juice_single_image_field', array(
+            'required' => false,
+            'by_reference' => false,
+            'label' => main label name',
+            'button_label' => 'button name', // DEFAULT default 'Upload' | upload button label
+            'field_attr' => array(
+                'filter' => 'home_big', // REQUIRED | liip imagine filter which we want to use
+                'data-form-kind' => 'image', // DEFAULT 'image' | if type is defined as image, controller will return dimensions arter upload
+                'data-callback' => 'handleSingleImage', // DEFAULT 'handleSingleImage' | which js function will be triggered after upload
+                'data-crop' => 'true' // DEFAULT default 'false' | if image should be croped (if image is same size as liip filter, it wont be croped)
+            )
+        ))
 
 ========================
-Entity
+SINGLE PHOTO
 ========================
-TODO : GalleryCollection - ale mam to zrobione w innym projekcie pozniej przeklepie
-SingleForm w UploadBundle - rozszerzamy nasza entitke o ta klase i dodajemy kilka linijek
 
-* @ORM\HasLifecycleCallbacks
+Add to entity (photo is default name):
+
+    /**
+     * @ORM\OneToOne(targetEntity="\Juice\UploadBundle\Entity\Media", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\JoinColumn(name="image_id", referencedColumnName="id", onDelete="SET NULL", nullable=true)
+     */
+    private $photo;
+
+    public function setPhoto($photo)
+    {
+        if ($photo == NULL || $photo->getFile() == NULL) {
+            $this->photo = NULL;
+        } else {
+            $this->photo = $photo;
+        }
+        return $this;
+    }
+
+    public function getPhoto()
+    {
+        return $this->photo;
+    }
+
+Add to form:
+
+    - min options
+
+        ->add('photo', 'juice_single_image_field', array(
+            'required' => false,
+            'by_reference' => false,
+            'field_attr' => array(
+                'filter' => 'home_big',
+            )
+        ))
+
+    - full options
+
+        ->add('photo', 'juice_single_image_field', array(
+            'required' => false,
+            'by_reference' => false,
+            'label' => main label name',
+            'button_label' => 'button name', // DEFAULT default 'Upload' | upload button label
+            'field_attr' => array(
+                'filter' => 'home_big', // REQUIRED | liip imagine filter which we want to use
+                'data-form-kind' => 'image', // DEFAULT 'image' | if type is defined as image, controller will return dimensions arter upload
+                'data-callback' => 'handleSingleImage', // DEFAULT 'handleSingleImage' | which js function will be triggered after upload
+                'data-crop' => 'true' // DEFAULT default 'false' | if image should be croped (if image is same size as liip filter, it wont be croped)
+            )
+        ))
+
+========================
+SINGLE FILE
+========================
+
+Add to entity (file is default name):
 
 /**
- * @ORM\PostPersist()
- * @ORM\PostUpdate()
+ *
+ * @ORM\OneToOne(targetEntity="\Juice\UploadBundle\Entity\Media", cascade={"persist", "remove"}, orphanRemoval=true)
+ * @ORM\JoinColumn(name="file_id", referencedColumnName="id", onDelete="SET NULL", nullable=true)
  */
-public function preFlush() {
-    $this->upload($this->photo , 'File'); - tutaj wpisujemy nazwy warotsci objektu do uploadu oraz jego nazwa potrzebna do update'u
+private $file;
+
+public function setFile($file)
+{
+    if ($file == NULL || $file->getFile() == NULL) {
+        $this->file = NULL;
+    } else {
+        $this->file = $file;
+    }
+
+    return $this;
 }
 
-/**
- * @ORM\PostRemove()
- */
-public function postRemove() {
-    $this->removeFile($this->photo , 'File'); - tutaj wpisujemy nazwy warotsci objektu do uploadu oraz jego nazwa potrzebna do update'u
+public function getFile()
+{
+    return $this->file;
 }
 
-========================
-FormType
-========================
-'image_type' dostepny przez service
-TODO: trzeba zrobic zabezpieczenia zeby nie strzelal errorami jak czegos nie dodasz; nie wszystkie oopcje sa wymagane
+Add to form:
 
- ->add('photo', 'image_type', array(
-    'attr' => array(
-        'filter' => 'header_vertical_bg',
-        'data-form-kind' => 'image',
-        'data-callback' => 'handleSingleImage',
-        'data-crop' => 'true',
-    )
+(min options)
+
+->add('file', 'juice_single_file_field', array(
+    'required' => false,
+    'by_reference' => false
 ))
 
+(full options)
 
+->add('file', 'juice_single_file_field', array(
+    'required' => false,
+    'by_reference' => false,
+    'label' => 'bla bla bla', // main label
+    'button_label' => 'file upload', // DEFAULT default 'Upload' | upload button label
+    'field_attr' => array(
+        'data-callback' => 'handleSingleFile' // DEFAULT 'handleSingleFile' | which js function will be triggered after upload
+    )
+))
 
 

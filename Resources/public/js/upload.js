@@ -24,9 +24,34 @@ var uploadedImages = new Array();
 var uploadView = Backbone.View.extend({
     
     requiredPaths : ["crop", "upload"],
-    requiredFormData : ["kind"],
+    requiredFormData : [],
     
     paths : {},
+
+    fileTpl: _.template(
+        '<input type="hidden" name="<%= inputName %>" value="<%= fileName %>" />' +
+        '<div class="alert alert-success juice_upload_single_file" role="alert"><%= fileName %><div class="button remove"><span class="glyphicon glyphicon-remove"></span></div></div>'
+    ),
+
+    imageTpl: _.template(
+        '<input type="hidden" name="<%= inputName %>" value="<%= fileName %>" />' +
+        '<img src="<%= fileNameWithPath %>" />'
+    ),
+
+    galleryItem: _.template(
+        '<div class="juice_upload_item">' +
+            '<div class="featured_layer"></div>' +
+                '<div class="edit_layer">' +
+                    '<div class="buttons">' +
+                        '<div class="button remove"><span class="glyphicon glyphicon-remove"></span></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="preview">' +
+                    '<img src="<%= file %>" />' +
+                '</div>' +
+            '<div class="hidden_form"><%= form %></div>' +
+        '</div>'
+    ),
     
     initialize : function(options) {
         var self = this;
@@ -43,11 +68,18 @@ var uploadView = Backbone.View.extend({
         this.$el.each(function() {
             self.initUploader(this);
         });
+
+        $(".juice_upload_collection_container").sortable({
+            update : function() {
+                $(this).closest(".juice_upload_item").trigger( "sortElements");
+            }
+        });
     },
     
     initUploader: function(el) {
         var self = this;
         var $el = $(el).find(".file_upload");
+
         var $container = $(el);
         var containerData = $container.data();
         var options = {};
@@ -253,19 +285,28 @@ var uploadView = Backbone.View.extend({
 
     uploadInitHandler : function(instance, $container) {},
 
-    sortItems : function(e) {},
-
-    removeItem : function(e) {},
-
     progressHandler: function(e, data, $container) {
         var progress = parseInt(data.loaded / data.total * 100, 10);
-        $container.find('#progress .progress-bar').css(
-            'width',
-            progress + '%'
-        );
+        $container.find('.progress_container .percent').html( progress + '%');
+        if (progress == 100) {
+            $container.find('.progress_container .percent').empty();
+            $container.find('.progress_container span').hide();
+        }
     },
 
-    handleGalleryImage: function($container, fileName) {},
+    sortItems : function() {
+        this.$el.find('.juice_upload_item').each(function() {
+            $(this).find('.position').attr('value' , $(this).index() + 1);
+        });
+    },
+
+    removeItem : function(e) {
+        if($(e.currentTarget).closest('.juice_upload_item').hasClass('single_item')) {
+            $(e.currentTarget).closest('.juice_upload_item').find('.juice_upload_form_container').empty();
+        } else {
+            $(e.currentTarget).closest('.juice_upload_item').remove();
+        }
+    },
 
     handleSingleImage: function($container, fileName) {
         var html = this.imageTpl({
@@ -274,7 +315,38 @@ var uploadView = Backbone.View.extend({
             'fileNameWithPath' : '/' + config.tmp_upload_dir + fileName + '?' + Math.random()
         });
 
-        $container.find('.preview').html(html);
+        $container.find('.juice_upload_form_container').html(html);
+
+        this.delegateEvents();
+    },
+
+    handleSingleFile: function($container, fileName) {
+        var html = this.fileTpl({
+            'inputName' : $container.data('input-name'),
+            'fileName' : fileName
+        });
+
+        $container.find('.juice_upload_form_container').html(html);
+
+        this.delegateEvents();
+    },
+
+    handleGalleryImage: function($container, fileName) {
+        // Get the data-prototype explained earlier
+        var prototype = $container.data('prototype');
+
+        // Replace '__name__' in the prototype's HTML to
+        // instead be a number based on how many items we have
+        var newForm = prototype.replace(/__name__/g, 1000 + $container.find('.juice_upload_item').length);
+
+        fileNameWithPath = '/' + config.tmp_upload_dir + fileName + '?' + Math.random();
+
+        var $galleryItem = $(this.galleryItem({file : fileNameWithPath, form : newForm}));
+
+        $galleryItem.find('input.photo').attr('value', fileName);
+        $galleryItem.find('input.position').attr('value', $('.juice_upload_item').length+1);
+
+        $container.find('.juice_upload_collection_container').append($galleryItem);
 
         this.delegateEvents();
     }

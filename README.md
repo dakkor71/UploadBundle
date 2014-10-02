@@ -1,21 +1,21 @@
-##Documentation
+## Documentation
 
-###parameters.yml
-
-add tmp and final folders
+### Parameters
 
 ``` yaml
+# app/config/parameters.yml
+
 tmp_upload_dir : uploads
 final_upload_dir : media
 ```
 
 
 
-###config.yml
-
-add to config
+### Config
 
 ``` yaml
+# app/config/config.yml
+
 assetic:
     bundles: [ 'JuiceUploadBundle' ]
 
@@ -29,15 +29,15 @@ twig:
             - 'JuiceUploadBundle::form_fields.html.twig'
 ```
 
-###cms.html.twig
+### Main twig layout
 
-Add CSS to site:
+Add CSS:
 
 ``` html
 {{ include('JuiceUploadBundle:Default:css.html.twig') }}
 ```
 
-Add JS to site (remember to include JS after (backbone, underscore) and before you init upload object):
+Add JS. Include JS after (backbone, underscore) and before you init upload object):
 
 **TODO:**
 
@@ -62,7 +62,7 @@ Add JS to site (remember to include JS after (backbone, underscore) and before y
 {% endjavascripts %}
 ```
 
-###GALLERY
+### Gallery
 
 ##### Create gallery item entity (point $collection targetEntity to your gallery entity):
 
@@ -139,7 +139,7 @@ public function addItem(GalleryItem $item)
 }
 ```
 
-#####Add to form:
+##### Add to form:
 
 min options
 
@@ -170,7 +170,7 @@ full options
 ))
 ```
 
-###SINGLE PHOTO
+### Single photo
 
 ##### Add to entity (photo is default name):
 
@@ -228,7 +228,7 @@ full options
 ))
 ```
 
-###SINGLE FILE
+### Single file
 
 ##### Add to entity (file is default name):
 

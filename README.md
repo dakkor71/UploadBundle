@@ -38,7 +38,11 @@ Add CSS to site:
 ```
 
 Add JS to site (remember to include JS after (backbone, underscore) and before you init upload object):
-TODO: change this to something simpler
+
+**TODO:**
+
+> change this to something simpler
+
 
 ``` html
 {% javascripts
@@ -60,7 +64,7 @@ TODO: change this to something simpler
 
 ###GALLERY
 
-###First create gallery item entity (point $collection targetEntity to your gallery entity):
+##### Create gallery item entity (point $collection targetEntity to your gallery entity):
 
 ``` php
 <?php
@@ -94,7 +98,7 @@ class GalleryItem extends BaseCollectionItem
 ?>
 ```
 
-###Create Gallery Entity:
+##### Create Gallery Entity:
 
 1) Add to entity header:
 
@@ -135,9 +139,10 @@ public function addItem(GalleryItem $item)
 }
 ```
 
-4) Add to form:
+#####Add to form:
 
-#####min options
+min options
+
 ``` php
 ->add('photo', 'juice_single_image_field', array(
     'required' => false,
@@ -148,7 +153,7 @@ public function addItem(GalleryItem $item)
 ))
 ```        
 
-#####full options
+full options
 
 ``` php
 ->add('photo', 'juice_single_image_field', array(
@@ -167,7 +172,7 @@ public function addItem(GalleryItem $item)
 
 ###SINGLE PHOTO
 
-Add to entity (photo is default name):
+##### Add to entity (photo is default name):
 
 ``` php
 /**
@@ -192,9 +197,9 @@ public function getPhoto()
 }
 ```
 
-Add to form:
+##### Add to form:
 
-#####min options
+min options
 
 ``` php
 ->add('photo', 'juice_single_image_field', array(
@@ -206,7 +211,7 @@ Add to form:
 ))
 ```
 
-#####full options
+full options
 
 ``` php
 ->add('photo', 'juice_single_image_field', array(
@@ -225,7 +230,7 @@ Add to form:
 
 ###SINGLE FILE
 
-####Add to entity (file is default name):
+##### Add to entity (file is default name):
 
 ``` php
 /**
@@ -252,9 +257,9 @@ public function getFile()
 }
 ```
 
-####Add to form:
+##### Add to form:
 
-#####min options
+min options
 
 ``` php
 ->add('file', 'juice_single_file_field', array(
@@ -263,7 +268,7 @@ public function getFile()
 ))
 ```
 
-#####full options
+full options
 
 ``` php
 ->add('file', 'juice_single_file_field', array(

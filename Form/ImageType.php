@@ -19,6 +19,7 @@ class ImageType extends AbstractType
 
         $builder
             ->add('file', 'juice_image_type', array(
+                'label' => false,
                 'button_label' => $buttonLabel,
                 'attr' => $attr
             ))

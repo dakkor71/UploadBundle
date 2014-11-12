@@ -1,4 +1,4 @@
-window.project.templates['cropModalTemplate'] = _.template(
+var cropModalTemplate = _.template(
     '<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">' +
         '<div class="modal-dialog">' +
             '<div class="modal-content">' +
@@ -67,12 +67,6 @@ var uploadView = Backbone.View.extend({
         
         this.$el.each(function() {
             self.initUploader(this);
-        });
-
-        $(".juice_upload_collection_container").sortable({
-            update : function() {
-                $(this).closest(".juice_upload_item").trigger( "sortElements");
-            }
         });
     },
     
@@ -193,7 +187,7 @@ var uploadView = Backbone.View.extend({
         }
         
         //add modal
-        var modal = window.project.templates['cropModalTemplate'];
+        var modal = cropModalTemplate;
         $container.append(modal({file : '/' + config.tmp_upload_dir + currentPhoto.fileName}));
         $('#cropModal').modal('show');
         

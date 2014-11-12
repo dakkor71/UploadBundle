@@ -33,6 +33,16 @@ class Media
      */
     protected $file;
 
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
     protected function getTmpFolderName()
     {
         return Globals::getTmpUploadDir();
@@ -123,16 +133,6 @@ class Media
     }
 
     /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * Set file
      *
      * @param string $file
@@ -159,6 +159,4 @@ class Media
     {
         return $this->file;
     }
-
-
 }

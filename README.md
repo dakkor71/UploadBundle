@@ -1,5 +1,28 @@
 ## Documentation
 
+### Composer
+
+``` html
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/dakkor71/UploadBundle.git"
+    }
+],
+```
+
+``` php
+php composer.phar require "liip/imagine-bundle" "dev-master"
+```
+
+### Routing
+
+``` yaml
+juice_upload:
+    resource: "@JuiceUploadBundle/Controller/DefaultController.php"
+    type:     annotation
+```
+
 ### Parameters
 
 ``` yaml
@@ -9,9 +32,13 @@ tmp_upload_dir : uploads
 final_upload_dir : media
 ```
 
-
-
 ### Config
+
+Add to appKernel.php
+
+``` php
+new Juice\UploadBundle\JuiceUploadBundle()
+```
 
 ``` yaml
 # app/config/config.yml

@@ -37,7 +37,7 @@ class AbstractImageType extends AbstractType
         $view->vars['upload_class'] = $options['upload_class'];
         $view->vars['attr']['data-form-kind'] = $options['kind'];
         $view->vars['attr']['data-callback'] = $options['callback'];
-        $view->vars['attr']['data-crop'] = $options['crop'];
+//        $view->vars['attr']['data-crop'] = $options['crop'];
 
         $filter = $view->vars['attr']['filter'];
         $config = $this->filterConfiguration->get($filter);

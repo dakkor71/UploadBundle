@@ -67,7 +67,6 @@ class Media
     {
         $file = $this->file;
         if (!empty($file) && file_exists($this->getFinalUploadRootDir() . '/' . $file)) {
-            //remove old file
             unlink($this->getFinalUploadRootDir() . '/' . $file);
         }
     }
@@ -107,8 +106,8 @@ class Media
     }
 
     /*
-    * //////////////////////////////////////////////////////
-    */
+     * //////////////////////////////////////////////////////
+     */
 
     public function getWebPath()
     {

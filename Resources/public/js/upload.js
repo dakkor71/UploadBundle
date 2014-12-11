@@ -1,20 +1,16 @@
-var cropModalTemplate = _.template(
-    '<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">' +
-        '<div class="modal-dialog">' +
-            '<div class="modal-content">' +
-                '<div class="modal-header">' +
-                    '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
-                    ' <h4 class="modal-title" id="myModalLabel">Crop image</h4>' +
-                '</div>' +
-                '<div class="modal-body">' +
-                    '<img class="hidden" src="<%= file %>" id="cropTarget" alt="[Jcrop Example]" />'+
-                '</div>' +
-                '<div class="modal-footer">' +
-                    '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
-                    '<button type="button" class="btn btn-primary crop-button">Crop</button>' +
-                '</div>' +
-            '</div><!-- /.modal-content -->' +
-        '</div><!-- /.modal-dialog -->' +
+var cropPopupTemplate = _.template(
+    '<div class="mask"></div>' +
+    '<div id="cropPopup" class="popup">' +
+        '<div class="popup-header">' +
+            '<img src="/bundles/raeadmin/images/icons/icon_delete.gif" class="close" />' +
+            ' <h4 class="popup-title">Crop image</h4>' +
+        '</div>' +
+        '<div class="popup-body">' +
+            '<img class="hidden" src="<%= file %>" id="cropTarget" alt="[Jcrop Example]" />'+
+        '</div>' +
+        '<div class="popup-footer">' +
+            '<button type="button" class="btn btn-primary crop-button">Crop</button>' +
+        '</div>' +
     '</div>'
 );
 
@@ -161,7 +157,7 @@ var uploadView = Backbone.View.extend({
     cropHandler: function($container) {
         var self = this;
         //check if crop action is in progress
-        if($('#cropModal').size() || uploadedImages.length == 0) {
+        if($('#cropPopup').size() || uploadedImages.length == 0) {
             return;
         }
 
@@ -186,29 +182,36 @@ var uploadView = Backbone.View.extend({
             return;
         }
         
-        //add modal
-        var modal = cropModalTemplate;
-        $container.append(modal({file : '/' + config.tmp_upload_dir + currentPhoto.fileName}));
-        $('#cropModal').modal('show');
+        //add popup
+        var popup = cropPopupTemplate;
+        $container.append(popup({file : '/' + config.tmp_upload_dir + currentPhoto.fileName}));
+        $('#cropPopup').show();
         
         //and modal on close
-        $('#cropModal').on('hidden.bs.modal', function () {
-            $('#cropTarget').Jcrop("destoy");
-            $('#cropModal').remove();
-            uploadedImages.shift();
-            if(uploadedImages.length > 0) {
-                self.cropHandler($container);
-            }
+        $('#cropPopup .close').click(function ($container) {
+            self.removePopup($container)
         });
         
         //init crop after image is loaded
         cropImage = new Image();
         cropImage.onload = function() {
-            $('.modal .modal-body img').removeClass('hidden');
+            $('.popup .popup-body img').removeClass('hidden');
             self.cropInit($container.data('ratio') , minSize ,  size);
         };
 
         cropImage.src = '/' + config.tmp_upload_dir + currentPhoto.fileName;
+    },
+
+    removePopup : function($container) {
+        $('#cropTarget').Jcrop("destoy");
+        $('.mask').remove();
+        $('#cropPopup').remove();
+
+        uploadedImages.shift();
+        if(uploadedImages.length > 0) {
+            self.cropHandler($container);
+        }
+
     },
 
     cropInit: function(ratio , minSize , size) {
@@ -265,9 +268,9 @@ var uploadView = Backbone.View.extend({
             success: function(data) {
                 var data = eval(data);
                 if (data.status == 'success') {
-                    $container = $('#cropModal').parent();
+                    $container = $('#cropPopup').parent();
                     self[$container.data('callback')]($container, uploadedImages[0].fileName);
-                    $('#cropModal').modal('hide');
+                    self.removePopup($container);
                 }
             }
         });

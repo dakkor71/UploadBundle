@@ -2,7 +2,7 @@ var cropPopupTemplate = _.template(
     '<div class="mask"></div>' +
     '<div id="cropPopup" class="popup">' +
         '<div class="popup-header">' +
-            '<img src="/bundles/raeadmin/images/icons/icon_delete.gif" class="close" />' +
+            '<span class="close" />' +
             ' <h4 class="popup-title">Crop image</h4>' +
         '</div>' +
         '<div class="popup-body">' +
@@ -48,6 +48,11 @@ var uploadView = Backbone.View.extend({
             '<div class="hidden_form"><%= form %></div>' +
         '</div>'
     ),
+
+    events: {
+        'sortElements': 'sortItems',
+        'click .remove': 'removeItem'
+    },
     
     initialize : function(options) {
         var self = this;
@@ -144,7 +149,7 @@ var uploadView = Backbone.View.extend({
     
     uploadSuccessHandler : function(data, $container) {
         var data = eval(data);
-        
+
         if($container.data('crop')) {
             uploadedImages.push(data.params);
             this.cropHandler($container);

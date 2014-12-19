@@ -9,10 +9,9 @@
         "url": "https://github.com/dakkor71/UploadBundle.git"
     }
 ],
-```
-
-``` php
-php composer.phar require "liip/imagine-bundle" "dev-master"
+"require": [
+    "juice/uploadbundle": "dev-master"
+]
 ```
 
 ### Routing
@@ -37,7 +36,9 @@ final_upload_dir : media
 Add to appKernel.php
 
 ``` php
-new Juice\UploadBundle\JuiceUploadBundle()
+
+new Liip\ImagineBundle\LiipImagineBundle(),
+new Juice\UploadBundle\JuiceUploadBundle(),
 ```
 
 ``` yaml
@@ -173,7 +174,6 @@ min options
 ``` php
 ->add('photo', 'juice_single_image_field', array(
     'required' => false,
-    'by_reference' => false,
     'field_attr' => array(
         'filter' => 'home_big',
     )
@@ -308,5 +308,3 @@ full options
     )
 ))
 ```
-
-

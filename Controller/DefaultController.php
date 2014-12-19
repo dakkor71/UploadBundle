@@ -8,29 +8,47 @@ use Symfony\Component\HttpFoundation\Response;
 use Juice\UploadBundle\Lib\Globals;
 
 class DefaultController extends Controller
-{   
-    private $_allowed_mime_types = array('image/jpeg' , 'image/png');
-    
-    public function getAllowedMimeTypes() 
+{
+    private $_allowed_mime_types = array('image/jpeg', 'image/png');
+
+    public function getAllowedMimeTypes()
     {
         return $this->_allowed_mime_types;
     }
-    
-    public function getTmpFileFolder() 
+
+    public function getTmpFileFolder()
     {
         return Globals::getTmpUploadDir() . '/';
     }
-    
+
     /**
      * @Route("/upload_file" , name="_upload_file")
      */
     public function uploadAction()
-    {     
-        $result = $this->addTmpFile($_FILES , $_POST);
+    {
+        $tmpFile = $_FILES['file']['tmp_name'];
+        $originalFileName = $_FILES['file']['name'];
+        $result = $this->addTmpFile($tmpFile, $originalFileName, $_POST);
         // create a JSON-response with a 200 status code
         $response = new Response(json_encode($result));
         $response->headers->set('Content-Type', 'application/json');
-        
+
+        return $response;
+    }
+
+    /**
+     * @Route("/copy_remote_file" , name="_copy_remote_file")
+     */
+    public function copyRemoteAction()
+    {
+        $fileUrl = $_POST['fileUrl'];
+        $filename = basename($fileUrl);
+
+        $result = $this->addTmpFile($fileUrl, $filename, $_POST, true);
+        // create a JSON-response with a 200 status code
+        $response = new Response(json_encode($result));
+        $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
@@ -39,61 +57,27 @@ class DefaultController extends Controller
      */
     public function cropAction()
     {
-        $result = $this->_cropImage($_POST['cordinates'] , $_POST['file']);
+        $result = $this->_cropImage($_POST['cordinates'], $_POST['file']);
 
         // create a JSON-response with a 200 status code
         $response = new Response(json_encode($result));
         $response->headers->set('Content-Type', 'application/json');
-        
+
         return $response;
     }
 
-	/**
-	 * @Route("/download_remote_file" , name="_download_remote_file")
-	 */
-	public function downloadRemoteFileAction()
-	{
-		$orginalFileName = $_POST['file'];
-		$fileInfo = pathinfo($orginalFileName);
-		$tmpName = $this->_createTmpName($fileInfo['extension']);
-		$targetPath = $_SERVER['DOCUMENT_ROOT'] . $this->getTmpFileFolder();
+    private function _cropImage($coordinates, $fileName)
+    {
 
-		if($this->isImage($orginalFileName)) {
-			if(filter_var($orginalFileName , FILTER_VALIDATE_URL) !== FALSE) {
-				$content = file_get_contents($orginalFileName);
-				$fp = fopen($targetPath . $tmpName, 'w');
-				fwrite($fp, $content);
-				fclose($fp);
-			}
-
-			$result = array(
-				'status' => 'success',
-				'file' => $tmpName
-			);
-		} else {
-			$result = array(
-				'status' => 'error'
-			);
-		}
-
-		// create a JSON-response with a 200 status code
-		$response = new Response(json_encode($result));
-		$response->headers->set('Content-Type', 'application/json');
-
-		return $response;
-	}
-
-    private function _cropImage($cordinates , $fileName) {
-        
-        //prepare cordinates
-        if($cordinates['x'] < 0) {
-            $cordinates['x'] = 0;
+        //prepare coordinates
+        if ($coordinates['x'] < 0) {
+            $coordinates['x'] = 0;
         }
-        
-        if($cordinates['y'] < 0) {
-            $cordinates['y'] = 0;
+
+        if ($coordinates['y'] < 0) {
+            $coordinates['y'] = 0;
         }
-        
+
         $container = $this->container;
 
         # The controller service
@@ -103,101 +87,104 @@ class DefaultController extends Controller
         $filterConfiguration = $container->get('liip_imagine.filter.configuration');
 
         # Get the filter settings
-        $configuracion = $filterConfiguration->get('custom_crop');
+        $configuration = $filterConfiguration->get('custom_crop');
 
         # Update filter settings
-        $configuracion['filters']['crop']['size'] = array($cordinates['w'], $cordinates['h']);
-        $configuracion['filters']['crop']['start'] = array($cordinates['x'], $cordinates['y']);
-        $filterConfiguration->set('custom_crop', $configuracion);
+        $configuration['filters']['crop']['size'] = array($coordinates['w'], $coordinates['h']);
+        $configuration['filters']['crop']['start'] = array($coordinates['x'], $coordinates['y']);
+        $filterConfiguration->set('custom_crop', $configuration);
 
         # Apply the filter
-        $imagemanagerResponse->filterAction($this->getRequest() , $this->getTmpFileFolder() . $fileName , 'custom_crop');
+        $imagemanagerResponse->filterAction($this->getRequest(), $this->getTmpFileFolder() . $fileName, 'custom_crop');
 
         # Move the img from temp
-        rename('media/cache/custom_crop/' . $this->getTmpFileFolder() . $fileName , $this->getTmpFileFolder() . $fileName);
+        rename('media/cache/custom_crop/' . $this->getTmpFileFolder() . $fileName, $this->getTmpFileFolder() . $fileName);
 
         return $result = array(
             'status' => 'success'
         );
     }
-    
-    public function addTmpFile(array $files , array $post) 
+
+    public function addTmpFile($tmpFile, $originalFileName, array $post, $external = false)
     {
         try {
-            $tmpFile = $files['file']['tmp_name'];
-            $orginalFileName = $files['file']['name'];
             $targetPath = $_SERVER['DOCUMENT_ROOT'] . '/' . $this->getTmpFileFolder();
-            $fileInfo = pathinfo($orginalFileName);
+            $fileInfo = pathinfo($originalFileName);
 
             //validate file MIME type
             $this->_checkMimeType($tmpFile);
-            
+
             $tmpName = $this->_createTmpName($fileInfo['extension']);
 
-            $targetFile = $targetPath . $tmpName; 
-            move_uploaded_file($tmpFile , $targetFile);
-           
+            $targetFile = $targetPath . $tmpName;
+            if ($external) {
+                copy($tmpFile, $targetFile);
+            } else {
+                move_uploaded_file($tmpFile, $targetFile);
+            }
+
             $result = array(
                 'success' => true,
                 'params' => array(
                     'fileName' => $tmpName,
-                ) 
+                )
             );
-            
-        if(isset($post['kind']) && $post['kind'] == 'image') {
-                list($width , $height) = getimagesize($targetFile);
+
+            if (isset($post['kind']) && $post['kind'] == 'image') {
+                list($width, $height) = getimagesize($targetFile);
                 $result['params']['size'] = array(
                     'width' => $width,
                     'height' => $height
                 );
             }
-            
-            // remove usless tmp files
+
+            // remove useless tmp files
             $this->clearFiles();
-            
+
         } catch (\Exception $e) {
-            $result = array('status' => 'error' , 'error' => $e->getMessage());
+            $result = array('status' => 'error', 'error' => $e->getMessage());
         }
-        
+
         return $result;
     }
-    
-    private function _createTmpName($extension) {
-        $tmpName = hash('sha256' , microtime().rand()) . '.' . $extension;
-        
-        while(is_file($_SERVER['DOCUMENT_ROOT'] . $this->getTmpFileFolder() . $tmpName)) {
-            $tmpName = hash('sha256' , microtime().rand()) . '.' . $extension;
+
+    private function _createTmpName($extension)
+    {
+        $tmpName = hash('sha256', microtime() . rand()) . '.' . $extension;
+
+        while (is_file($_SERVER['DOCUMENT_ROOT'] . $this->getTmpFileFolder() . $tmpName)) {
+            $tmpName = hash('sha256', microtime() . rand()) . '.' . $extension;
         }
-        
+
         return $tmpName;
     }
-    
-    public function removeTmpFiles(array $tmpFiles) 
+
+    public function removeTmpFiles(array $tmpFiles)
     {
         $em = $this->getDoctrine()->getManager();
         $tmpFileRepository = $em->getRepository('JuiceUploadBundle:TmpFile');
-        
-        foreach($tmpFiles as $tmpFileId => $tmpFileName) {
+
+        foreach ($tmpFiles as $tmpFileId => $tmpFileName) {
             //remove tmp file from DB if exist 
             $tmpFile = $tmpFileRepository->find($tmpFileId);
-            if(is_object($tmpFile)) {
+            if (is_object($tmpFile)) {
                 $em->remove($tmpFile);
             }
-            
+
             //delete tmp file
             $this->_deleteTmpFile($tmpFileName);
         }
         $em->flush();
     }
-    
-    private function _deleteTmpFile($filepath) 
+
+    private function _deleteTmpFile($filepath)
     {
-        if(is_file($_SERVER['DOCUMENT_ROOT'] . '/' . $this->getTmpFileFolder() . $filepath)) {
+        if (is_file($_SERVER['DOCUMENT_ROOT'] . '/' . $this->getTmpFileFolder() . $filepath)) {
             unlink($_SERVER['DOCUMENT_ROOT'] . '/' . $this->getTmpFileFolder() . $filepath);
         }
     }
-    
-    private function _checkMimeType($file) 
+
+    private function _checkMimeType($file)
     {
         //TODO - trzeba trzymac tutaj typy w tablicy i w zależności od rodzaju sprawdzac.
         //FIXME deprecated and shit!
@@ -205,14 +192,14 @@ class DefaultController extends Controller
 //             //throw new \Exception('invalid MIME type');
 //         };
     }
-    
-    public function clearFiles() 
+
+    public function clearFiles()
     {
-        $excludedFiles = array('.' , '..' , '.gitignore', '.gitkeep');
+        $excludedFiles = array('.', '..', '.gitignore', '.gitkeep');
         $checkTime = time() - 60 * 60 * 10;
         if ($handle = opendir($_SERVER['DOCUMENT_ROOT'] . '/' . $this->getTmpFileFolder())) {
             while (false !== ($entry = readdir($handle))) {
-                if(!in_array($entry , $excludedFiles) && filemtime($_SERVER['DOCUMENT_ROOT'] . '/' . $this->getTmpFileFolder() . $entry) < $checkTime) {
+                if (!in_array($entry, $excludedFiles) && filemtime($_SERVER['DOCUMENT_ROOT'] . '/' . $this->getTmpFileFolder() . $entry) < $checkTime) {
                     $this->_deleteTmpFile($entry);
                 }
             }
@@ -221,13 +208,13 @@ class DefaultController extends Controller
         }
     }
 
-	private function isImage($filename)
-	{
-		if(@is_array(getimagesize($filename))){
-			return true;
-		} else {
-			return false;
-		}
-	}
-    
+    private function isImage($filename)
+    {
+        if (@is_array(getimagesize($filename))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

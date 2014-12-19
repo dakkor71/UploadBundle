@@ -111,6 +111,9 @@ class Media
 
     public function getWebPath()
     {
+        if (empty($this->file)) {
+            return null;
+        }
         return '/' . $this->getFinalFolderName() . '/' . $this->file;
     }
 
@@ -142,6 +145,10 @@ class Media
         if (isset($this->file)) {
             // store the old name to delete after the update
             $this->temp['file'] = $this->file;
+        }
+
+        if ($file == null) {
+            $this->removeFile();
         }
 
         $this->file = $file;

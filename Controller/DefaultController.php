@@ -28,7 +28,7 @@ class DefaultController extends Controller
     {
         $tmpFile = $_FILES['file']['tmp_name'];
         $originalFileName = $_FILES['file']['name'];
-        $result = $this->addTmpFile($tmpFile, $originalFileName, $_POST);
+        $result = $this->addTmpFile($tmpFile, $originalFileName, $_POST, $_FILES);
         // create a JSON-response with a 200 status code
         $response = new Response(json_encode($result));
         $response->headers->set('Content-Type', 'application/json');
@@ -44,7 +44,7 @@ class DefaultController extends Controller
         $fileUrl = $_POST['fileUrl'];
         $filename = basename($fileUrl);
 
-        $result = $this->addTmpFile($fileUrl, $filename, $_POST, true);
+        $result = $this->addTmpFile($fileUrl, $filename, $_POST, $_FILES, true);
         // create a JSON-response with a 200 status code
         $response = new Response(json_encode($result));
         $response->headers->set('Content-Type', 'application/json');
@@ -105,9 +105,14 @@ class DefaultController extends Controller
         );
     }
 
-    public function addTmpFile($tmpFile, $originalFileName, array $post, $external = false)
+    public function addTmpFile($tmpFile, $originalFileName, array $post, array $files, $external = false)
     {
         try {
+
+            if ($files['file']['error'] != 0) {
+                Throw new \Exception($this->codeToMessage($files['file']['error']));
+            }
+
             $targetPath = $_SERVER['DOCUMENT_ROOT'] . '/' . $this->getTmpFileFolder();
             $fileInfo = pathinfo($originalFileName);
 
@@ -146,6 +151,38 @@ class DefaultController extends Controller
         }
 
         return $result;
+    }
+
+    private function codeToMessage($code)
+    {
+        switch ($code) {
+            case UPLOAD_ERR_INI_SIZE:
+                $message = "The uploaded file exceeds the upload_max_filesize directive in php.ini";
+                break;
+            case UPLOAD_ERR_FORM_SIZE:
+                $message = "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form";
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $message = "The uploaded file was only partially uploaded";
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                $message = "No file was uploaded";
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $message = "Missing a temporary folder";
+                break;
+            case UPLOAD_ERR_CANT_WRITE:
+                $message = "Failed to write file to disk";
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $message = "File upload stopped by extension";
+                break;
+
+            default:
+                $message = "Unknown upload error";
+                break;
+        }
+        return $message;
     }
 
     private function _createTmpName($extension)

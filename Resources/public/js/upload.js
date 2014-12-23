@@ -150,6 +150,11 @@ var uploadView = Backbone.View.extend({
     uploadSuccessHandler : function(data, $container) {
         var data = eval(data);
 
+        if (data.status == 'error') {
+            alert(data.error);
+            return;
+        }
+
         if($container.data('crop')) {
             uploadedImages.push(data.params);
             this.cropHandler($container);

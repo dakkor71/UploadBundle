@@ -16,11 +16,13 @@ class ImageType extends AbstractType
     {
         $attr = $options['field_attr'];
         $buttonLabel = $options['button_label'];
+        $accept = $options['accept'];
 
         $builder
             ->add('file', 'juice_image_type', array(
                 'label' => false,
                 'button_label' => $buttonLabel,
+                'accept' => $accept,
                 'attr' => $attr
             ))
         ;
@@ -32,7 +34,8 @@ class ImageType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'button_label' => 'Upload',
+            'button_label' => '',
+            'accept' => '',
             'field_attr' => array(),
             'data_class' => 'Juice\UploadBundle\Entity\Media',
             'attr' => array(

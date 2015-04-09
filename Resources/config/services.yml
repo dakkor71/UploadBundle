@@ -39,9 +39,10 @@ services:
             - { name: form.type, alias: juice_gallery_item_type }
         arguments: [ "@liip_imagine.filter.manager" ]
 
-
-
-
+    juice_upload_bundle.handler.crop:
+        class: Juice\UploadBundle\Handler\CropHandler
+        arguments: ['@service_container', "@liip_imagine.filter.manager" ]
+        scope: request
 
     juice_upload_bundle.twig.file_extension:
         class: Juice\UploadBundle\Twig\FileExtension

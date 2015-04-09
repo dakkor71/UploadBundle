@@ -22,6 +22,8 @@ juice_upload:
     type:     annotation
 ```
 
+TIP: you can add some prefix which will be protected by symfony2 security component
+
 ### Parameters
 
 ``` yaml
@@ -124,77 +126,6 @@ class GalleryItem extends BaseCollectionItem
 }
 
 ?>
-```
-
-##### Create Gallery Entity:
-
-1) Add to entity header:
-
-``` php
-use Juice\UploadBundle\Model\Collection as BaseCollection;
-```
-
-2) Extend gallery class:
-
-``` php
-class Gallery extends BaseCollection
-```
-
-3) Connect gallery with you GalleryItem entity
-
-``` php
-/**
- * @ORM\OneToMany(targetEntity="GalleryItem", mappedBy="collection", cascade={"persist", "remove"})
- * @ORM\OrderBy({"position" = "ASC", "id" = "DESC"})
- */
-protected $items;
-```
-
-3) add constructor and setter
-
-``` php
-public function __construct()
-{
-    $this->items = new ArrayCollection();
-}
-
-public function addItem(GalleryItem $item)
-{
-    $this->items->add($item);
-    $item->setCollection($this);
-
-    return $this;
-}
-```
-
-##### Add to form:
-
-min options
-
-``` php
-->add('photo', 'juice_single_image_field', array(
-    'required' => false,
-    'field_attr' => array(
-        'filter' => 'home_big',
-    )
-))
-```        
-
-full options
-
-``` php
-->add('photo', 'juice_single_image_field', array(
-    'required' => false,
-    'by_reference' => false,
-    'label' => main label name',
-    'button_label' => 'button name', // DEFAULT default 'Upload' | upload button label
-    'field_attr' => array(
-        'filter' => 'home_big', // REQUIRED | liip imagine filter which we want to use
-        'data-form-kind' => 'image', // DEFAULT 'image' | if type is defined as image, controller will return dimensions arter upload
-        'data-callback' => 'handleSingleImage', // DEFAULT 'handleSingleImage' | which js function will be triggered after upload
-        'data-crop' => 'true' // DEFAULT default 'false' | if image should be croped (if image is same size as liip filter, it wont be croped)
-    )
-))
 ```
 
 ### Single photo
@@ -305,6 +236,77 @@ full options
     'button_label' => 'file upload', // DEFAULT default 'Upload' | upload button label
     'field_attr' => array(
         'data-callback' => 'handleSingleFile' // DEFAULT 'handleSingleFile' | which js function will be triggered after upload
+    )
+))
+```
+
+##### Create Gallery Entity:
+
+1) Add to entity header:
+
+``` php
+use Juice\UploadBundle\Model\Collection as BaseCollection;
+```
+
+2) Extend gallery class:
+
+``` php
+class Gallery extends BaseCollection
+```
+
+3) Connect gallery with you GalleryItem entity
+
+``` php
+/**
+ * @ORM\OneToMany(targetEntity="GalleryItem", mappedBy="collection", cascade={"persist", "remove"})
+ * @ORM\OrderBy({"position" = "ASC", "id" = "DESC"})
+ */
+protected $items;
+```
+
+3) add constructor and setter
+
+``` php
+public function __construct()
+{
+    $this->items = new ArrayCollection();
+}
+
+public function addItem(GalleryItem $item)
+{
+    $this->items->add($item);
+    $item->setCollection($this);
+
+    return $this;
+}
+```
+
+##### Add to form:
+
+min options
+
+``` php
+->add('photo', 'juice_single_image_field', array(
+    'required' => false,
+    'field_attr' => array(
+        'filter' => 'home_big',
+    )
+))
+```
+
+full options
+
+``` php
+->add('photo', 'juice_single_image_field', array(
+    'required' => false,
+    'by_reference' => false,
+    'label' => main label name',
+    'button_label' => 'button name', // DEFAULT default 'Upload' | upload button label
+    'field_attr' => array(
+        'filter' => 'home_big', // REQUIRED | liip imagine filter which we want to use
+        'data-form-kind' => 'image', // DEFAULT 'image' | if type is defined as image, controller will return dimensions arter upload
+        'data-callback' => 'handleSingleImage', // DEFAULT 'handleSingleImage' | which js function will be triggered after upload
+        'data-crop' => 'true' // DEFAULT default 'false' | if image should be croped (if image is same size as liip filter, it wont be croped)
     )
 ))
 ```

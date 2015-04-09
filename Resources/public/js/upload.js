@@ -69,6 +69,8 @@ var uploadView = Backbone.View.extend({
         this.$el.each(function() {
             self.initUploader(this);
         });
+
+        self.initRemoveUpload();
     },
     
     initUploader: function(el) {
@@ -101,6 +103,27 @@ var uploadView = Backbone.View.extend({
         });
 
         $el.fileupload(options);
+    },
+
+    initRemoveUpload: function() {
+        self = this;
+        $('[data-remote="true"]').each(function() {
+            $element = $(this);
+            $(this).focusout(function() {
+                $.ajax({
+                    url: '/copy_remote_file',
+                    data: {
+                        fileUrl: $(this).val(),
+                        kind: 'image'
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        self.uploadSuccessHandler(data, $('div[data-input-name*="\[' + $element.data('parent') + '\]\[file\]"]'));
+                    }
+                });
+            });
+        });
     },
     
     validData : function($container , options) {
@@ -294,10 +317,11 @@ var uploadView = Backbone.View.extend({
 
     progressHandler: function(e, data, $container) {
         var progress = parseInt(data.loaded / data.total * 100, 10);
-        $container.find('.progress_container .percent').html( progress + '%');
+        $container.find('.juice_upload_progress_container .percent').html( progress + '%');
+
         if (progress == 100) {
-            $container.find('.progress_container .percent').empty();
-            $container.find('.progress_container span').hide();
+            $container.find('.juice_upload_progress_container .percent').empty();
+            $container.find('.juice_upload_progress_container span').hide();
         }
     },
 

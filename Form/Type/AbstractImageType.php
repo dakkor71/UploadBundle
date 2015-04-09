@@ -35,9 +35,13 @@ class AbstractImageType extends AbstractType
 
         $view->vars['button_label'] = $options['button_label'];
         $view->vars['upload_class'] = $options['upload_class'];
-        $view->vars['attr']['data-form-kind'] = $options['kind'];
-        $view->vars['attr']['data-callback'] = $options['callback'];
-//        $view->vars['attr']['data-crop'] = $options['crop'];
+        $view->vars['accept'] = $options['accept'];
+
+        foreach($options['default_data']  as $key => $value) {
+            if(!isset($view->vars['attr'][$key])) {
+                $view->vars['attr'][$key] = $value;
+            }
+        }
 
         $filter = $view->vars['attr']['filter'];
         $config = $this->filterConfiguration->get($filter);
@@ -55,11 +59,14 @@ class AbstractImageType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'crop' => 'false',
-            'callback' => 'handleSingleImage',
-            'kind' => 'image',
+            'default_data' => array(
+                'data-form-kind' => 'image',
+                'data-callback' => 'handleSingleImage',
+                'data-crop' => 'false',
+            ),
             'upload_class' => 'juice_upload',
             'button_label' => 'Upload',
+            'accept' => '.jpg, .png'
         ));
     }
 

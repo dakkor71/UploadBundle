@@ -20,7 +20,13 @@ class AbstractFileType extends AbstractType
     {
         $view->vars['button_label'] = $options['button_label'];
         $view->vars['upload_class'] = $options['upload_class'];
-        $view->vars['attr']['data-callback'] = $options['callback'];
+        $view->vars['accept'] = $options['accept'];
+
+        foreach($options['default_data']  as $key => $value) {
+            if(!isset($view->vars['attr'][$key])) {
+                $view->vars['attr'][$key] = $value;
+            }
+        }
     }
 
     /**
@@ -29,9 +35,14 @@ class AbstractFileType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
+            'default_data' => array(
+                'data-form-kind' => 'file',
+                'data-callback' => 'handleSingleFile',
+                'data-crop' => 'false',
+            ),
             'upload_class' => 'juice_upload',
             'button_label' => 'Upload',
-            'callback' => 'handleSingleFile'
+            'accept' => ''
         ));
     }
 

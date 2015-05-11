@@ -5,13 +5,18 @@
     };
 </script>
 
-{% javascripts
-    '@JuiceUploadBundle/Resources/public/js/upload/vendor/jquery.ui.widget.js'
-    '@JuiceUploadBundle/Resources/public/js/upload/jquery.iframe-transport.js'
-    '@JuiceUploadBundle/Resources/public/js/upload/jquery.fileupload.js'
-    '@JuiceUploadBundle/Resources/public/js/libs/jquery.Jcrop.js'
-    '@JuiceUploadBundle/Resources/public/js/upload.js'
-%}
-<script type="text/javascript" src="{{ asset_url }}"></script>
-{% endjavascripts %}
+{% block javascript %}
+    {% javascripts
+        '@JuiceUploadBundle/Resources/public/js/upload/vendor/jquery.ui.widget.js'
+        '@JuiceUploadBundle/Resources/public/js/upload/vendor/jquery-ui.min.js'
+        '@JuiceUploadBundle/Resources/public/js/upload/jquery.iframe-transport.js'
+        '@JuiceUploadBundle/Resources/public/js/upload/jquery.fileupload.js'
+        '@JuiceUploadBundle/Resources/public/js/libs/jquery.Jcrop.js'
+        '@JuiceUploadBundle/Resources/public/js/upload.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+
 

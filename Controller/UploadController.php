@@ -31,11 +31,11 @@ class UploadController extends Controller
                 break;
         }
 
-//        try {
+        try {
             $result = $uploadHandler->addTmpFile();
-//        } catch (\Exception $e) {
-//            $result = array('status' => 'error', 'error' => $e->getMessage());
-//        }
+        } catch (\Exception $e) {
+            $result = array('status' => 'error', 'error' => $e->getMessage());
+        }
 
         return $this->generateResponse($result);
     }
@@ -50,11 +50,11 @@ class UploadController extends Controller
 
         $uploadHandler = new ImageUploadHandler($fileUrl, $filename, $_FILES);
 
-//        try {
+        try {
             $result = $uploadHandler->addTmpFile();
-//        } catch (\Exception $e) {
-//            $result = array('status' => 'error', 'error' => $e->getMessage());
-//        }
+        } catch (\Exception $e) {
+            $result = array('status' => 'error', 'error' => $e->getMessage());
+        }
 
         return $this->generateResponse($result);
     }
@@ -64,12 +64,12 @@ class UploadController extends Controller
      */
     public function cropAction()
     {
-//        try {
+        try {
             $cropHandler = $this->get('juice_upload_bundle.handler.crop');
             $result = $cropHandler->cropImage($this->getRequest(), $_POST['cordinates'], $_POST['file']);
-//        } catch (\Exception $e) {
-//            $result = array('status' => 'error', 'error' => $e->getMessage());
-//        }
+        } catch (\Exception $e) {
+            $result = array('status' => 'error', 'error' => $e->getMessage());
+        }
 
 
         return $this->generateResponse($result);

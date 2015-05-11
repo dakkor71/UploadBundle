@@ -1,7 +1,11 @@
-{% stylesheets
-    '@JuiceUploadBundle/Resources/public/css/jquery.fileupload.css'
-    '@JuiceUploadBundle/Resources/public/css/jquery.Jcrop.css'
-    '@JuiceUploadBundle/Resources/public/less/style.less'
-%}
-<link rel="stylesheet" href="{{ asset_url }}" />
-{% endstylesheets %}
+{% block sheetstyle %}
+    {% stylesheets
+        '@JuiceUploadBundle/Resources/public/css/jquery.fileupload.css'
+        '@JuiceUploadBundle/Resources/public/css/jquery.Jcrop.css'
+        '@JuiceUploadBundle/Resources/public/less/style.less'
+        '@JuiceUploadBundle/Resources/public/css/jquery-ui.min.css'
+    %}
+
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock sheetstyle %}

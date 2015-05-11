@@ -63,12 +63,16 @@ class Media
         return __DIR__ . '/../../../../../../web/' . $this->getTmpFolderName() . '/' . $path;
     }
 
-    public function removeFile()
+    public function removeFile($file)
     {
-        $file = $this->file;
         if (!empty($file) && file_exists($this->getFinalUploadRootDir() . '/' . $file)) {
             unlink($this->getFinalUploadRootDir() . '/' . $file);
         }
+    }
+
+    public function clearFiles() {
+        $this->removeFile($this->file);
+        $this->removeFile($this->temp['file']);
     }
 
     public function upload()
@@ -124,14 +128,18 @@ class Media
     public function postFlush()
     {
         $this->upload();
+
+        if ($this->file == null) {
+            $this->clearFiles();
+        }
     }
 
     /**
-     * @ORM\PreRemove()
+     * @ORM\PostRemove()
      */
-    public function preRemove()
+    public function postRemove()
     {
-        $this->removeFile();
+        $this->clearFiles();
     }
 
     /**
@@ -142,14 +150,11 @@ class Media
      */
     public function setFile($file)
     {
-        if (isset($this->file)) {
+        if ($this->file != $file) {
             // store the old name to delete after the update
             $this->temp['file'] = $this->file;
         }
 
-        if ($file == null) {
-            $this->removeFile();
-        }
 
         $this->file = $file;
 

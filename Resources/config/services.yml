@@ -1,6 +1,3 @@
-parameters:
-#    juice_upload.example.class: Juice\UploadBundle\Example
-
 services:
     #fields
     juice_upload_bundle.juice_single_image_field:
@@ -13,32 +10,36 @@ services:
         class: Juice\UploadBundle\Form\FileType
         tags:
             - { name: form.type, alias: juice_single_file_field }
-        arguments: [ "@liip_imagine.filter.manager" ]
+
+    juice_upload_bundle.juice_gallery_field:
+        class: Juice\UploadBundle\Form\Type\BaseGalleryType
+        tags:
+            - { name: form.type, alias: juice_gallery_field }
+
+    juice_upload_bundle.juice_gallery_child_field:
+            class: Juice\UploadBundle\Form\GalleryImageType
+            tags:
+                - { name: form.type, alias: juice_gallery_child_field }
 
     #types
     juice_upload_bundle.juice_image_type:
-        class: Juice\UploadBundle\Form\Type\AbstractImageType
+        class: Juice\UploadBundle\Form\Type\BaseImageType
         tags:
             - { name: form.type, alias: juice_image_type }
         arguments: [ "@liip_imagine.filter.manager" ]
 
+    juice_upload_bundle.juice_gallery_image_type:
+        class: Juice\UploadBundle\Form\Type\BaseGalleryChildType
+        tags:
+            - { name: form.type, alias: juice_gallery_image_type }
+        arguments: [ "@liip_imagine.filter.manager" ]
+
     juice_upload_bundle.juice_file_type:
-        class: Juice\UploadBundle\Form\Type\AbstractFileType
+        class: Juice\UploadBundle\Form\Type\BaseFileType
         tags:
             - { name: form.type, alias: juice_file_type }
 
-    juice_upload_bundle.juice_gallery_collection:
-        class: Juice\UploadBundle\Form\Type\GalleryCollectionType
-        tags:
-            - { name: form.type, alias: juice_gallery_collection }
-        arguments: [ "@liip_imagine.filter.manager" ]
-
-    juice_upload_bundle.juice_gallery_item_type:
-        class: Juice\UploadBundle\Form\Type\GalleryItemType
-        tags:
-            - { name: form.type, alias: juice_gallery_item_type }
-        arguments: [ "@liip_imagine.filter.manager" ]
-
+    #others
     juice_upload_bundle.handler.crop:
         class: Juice\UploadBundle\Handler\CropHandler
         arguments: ['@service_container', "@liip_imagine.filter.manager" ]
@@ -49,3 +50,7 @@ services:
         tags:
             - { name: twig.extension }
         arguments: [ "@liip_imagine.filter.manager" ]
+
+
+
+

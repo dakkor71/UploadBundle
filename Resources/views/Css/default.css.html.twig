@@ -1,0 +1,11 @@
+{% extends 'JuiceUploadBundle:Default:css.html.twig' %}
+
+{% block sheetstyle %}
+    {{  parent() }}
+    {% stylesheets
+        '@JuiceUploadBundle/Resources/public/less/default.less'
+    %}
+
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock sheetstyle %}

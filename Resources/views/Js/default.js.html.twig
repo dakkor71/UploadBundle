@@ -1,0 +1,13 @@
+{% extends 'JuiceUploadBundle:Default:js.html.twig' %}
+
+{% block javascript %}
+    {{ parent() }}
+    {% javascripts
+        '@JuiceUploadBundle/Resources/public/js/default_templates.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+
+

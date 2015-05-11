@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class FileType extends AbstractType
+class GalleryImageType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -16,11 +16,13 @@ class FileType extends AbstractType
     {
         $attr = $options['field_attr'];
         $buttonLabel = $options['button_label'];
+        $accept = $options['accept'];
 
         $builder
-            ->add('file', 'juice_file_type', array(
+            ->add('file', 'juice_gallery_image_type', array(
                 'label' => false,
                 'button_label' => $buttonLabel,
+                'accept' => $accept,
                 'attr' => $attr
             ))
         ;
@@ -32,7 +34,9 @@ class FileType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
+            'upload_class' => 'juice_upload',
             'button_label' => 'Upload',
+            'accept' => '.jpg, .png',
             'field_attr' => array(),
             'data_class' => 'Juice\UploadBundle\Entity\Media',
             'attr' => array(
@@ -46,6 +50,6 @@ class FileType extends AbstractType
      */
     public function getName()
     {
-        return 'juice_single_file_field';
+        return 'juice_gallery_child_field';
     }
 }

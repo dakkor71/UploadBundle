@@ -64,7 +64,7 @@ abstract class UploadHandler
     /**
      * @throws \Exception
      *
-     * upload local file or donwload remote file. Throws exception on error
+     * upload local file or download remote file. Throws exception on error
      */
     private function uploadFile() {
         if ($this->remote) {

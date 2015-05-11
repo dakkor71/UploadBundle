@@ -18,25 +18,6 @@ class ImageUploadHandler extends UploadHandler
             'height' => $height
         );
 
-        if (!$this->isImage()) {
-//            $this->deleteTmpFile($result['params']['filename']);
-//            Throw new \Exception("Uploaded file is not image");
-        }
-
-
-
         return $result;
-    }
-
-    public function isImage() {
-        $file = new File($this->getTargetFilePath());
-
-        $mimeType = $file->getMimeType();
-
-        if (strpos($mimeType, 'image')) {
-            return TRUE;
-        }
-
-        return FALSE;
     }
 }

@@ -8,7 +8,7 @@ use Gedmo\Sluggable\Sluggable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Juice\UploadBundle\Entity\CollectionItem as CollectionItem2;
 
-abstract class Collection
+class Collection
 {
     protected $id;
 
@@ -30,7 +30,7 @@ abstract class Collection
      *
      * @return integer
      */
-    public function getId()
+    protected function getId()
     {
         return $this->id;
     }

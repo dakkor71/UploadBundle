@@ -1,19 +1,3 @@
-var cropPopupTemplate = _.template(
-    '<div class="mask"></div>' +
-    '<div id="cropPopup" class="popup">' +
-        '<div class="popup-header">' +
-            '<span class="close" />' +
-            ' <h4 class="popup-title">Crop image</h4>' +
-        '</div>' +
-        '<div class="popup-body">' +
-            '<img class="hidden" src="<%= file %>" id="cropTarget" alt="[Jcrop Example]" />'+
-        '</div>' +
-        '<div class="popup-footer">' +
-            '<button type="button" class="btn btn-primary crop-button">Crop</button>' +
-        '</div>' +
-    '</div>'
-);
-
 var cordinates;
 var uploadedImages = new Array();
 
@@ -23,31 +7,6 @@ var uploadView = Backbone.View.extend({
     requiredFormData : [],
     
     paths : {},
-
-    fileTpl: _.template(
-        '<input type="hidden" name="<%= inputName %>" value="<%= fileName %>" />' +
-        '<div class="alert alert-success juice_upload_single_file" role="alert"><%= fileName %><div class="button remove"><span class="glyphicon glyphicon-remove"></span></div></div>'
-    ),
-
-    imageTpl: _.template(
-        '<input type="hidden" name="<%= inputName %>" value="<%= fileName %>" />' +
-        '<img src="<%= fileNameWithPath %>" />'
-    ),
-
-    galleryItem: _.template(
-        '<div class="juice_upload_item">' +
-            '<div class="featured_layer"></div>' +
-                '<div class="edit_layer">' +
-                    '<div class="buttons">' +
-                        '<div class="button remove"><span class="glyphicon glyphicon-remove"></span></div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="preview">' +
-                    '<img src="<%= file %>" />' +
-                '</div>' +
-            '<div class="hidden_form"><%= form %></div>' +
-        '</div>'
-    ),
 
     events: {
         'sortElements': 'sortItems',
@@ -71,6 +30,7 @@ var uploadView = Backbone.View.extend({
         });
 
         self.initRemoveUpload();
+        self.initSorting();
     },
     
     initUploader: function(el) {
@@ -221,7 +181,7 @@ var uploadView = Backbone.View.extend({
         $('#cropPopup').show();
         
         //and modal on close
-        $('#cropPopup .close').click(function ($container) {
+        $('.mask').click(function ($container) {
             self.removePopup($container)
         });
         
@@ -325,22 +285,33 @@ var uploadView = Backbone.View.extend({
         }
     },
 
+    initSorting: function() {
+        var self = this;
+        $(".juice_upload_collection_container").sortable({
+            update : function() {
+                self.sortItems();
+            }
+        });
+    },
+
     sortItems : function() {
-        this.$el.find('.juice_upload_item').each(function() {
+        this.$el.find('.juice_upload_collection_container > div').each(function() {
             $(this).find('.position').attr('value' , $(this).index() + 1);
         });
     },
 
     removeItem : function(e) {
-        if($(e.currentTarget).closest('.juice_upload_item').hasClass('single_item')) {
-            $(e.currentTarget).closest('.juice_upload_item').find('.juice_upload_form_container').empty();
+        if ($(e.currentTarget).closest('.juice_upload_collection_container').size()) {
+            //remove from gallery
+            $(e.currentTarget).closest('.juice_upload_gallery_item').remove();
         } else {
-            $(e.currentTarget).closest('.juice_upload_item').remove();
+            //remove single file and image
+            $(e.currentTarget).closest('.juice_upload_item').find('.juice_upload_form_container').empty();
         }
     },
 
     handleSingleImage: function($container, fileName) {
-        var html = this.imageTpl({
+        var html = imageTpl({
             'inputName' : $container.data('input-name'),
             'fileName' : fileName,
             'fileNameWithPath' : '/' + config.tmp_upload_dir + fileName + '?' + Math.random()
@@ -352,7 +323,7 @@ var uploadView = Backbone.View.extend({
     },
 
     handleSingleFile: function($container, fileName) {
-        var html = this.fileTpl({
+        var html = fileTpl({
             'inputName' : $container.data('input-name'),
             'fileName' : fileName
         });
@@ -363,6 +334,7 @@ var uploadView = Backbone.View.extend({
     },
 
     handleGalleryImage: function($container, fileName) {
+
         // Get the data-prototype explained earlier
         var prototype = $container.data('prototype');
 
@@ -372,12 +344,16 @@ var uploadView = Backbone.View.extend({
 
         fileNameWithPath = '/' + config.tmp_upload_dir + fileName + '?' + Math.random();
 
-        var $galleryItem = $(this.galleryItem({file : fileNameWithPath, form : newForm}));
+        //var $galleryItem = $(galleryItem({file : fileNameWithPath, form : newForm}));
+        var $newForm = $(newForm);
 
-        $galleryItem.find('input.photo').attr('value', fileName);
-        $galleryItem.find('input.position').attr('value', $('.juice_upload_item').length+1);
+        console.log(newForm);
 
-        $container.find('.juice_upload_collection_container').append($galleryItem);
+        $newForm.find('.juice_upload_form_container input').attr('value', fileName);
+        $newForm.find('.juice_upload_form_container.preview').append('<img src="' + fileNameWithPath  + '"/>');
+        $newForm.find('input.position').attr('value', $('.juice_upload_item').length+1);
+
+        $container.find('.juice_upload_collection_container').append($newForm);
 
         this.delegateEvents();
     }

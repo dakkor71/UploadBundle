@@ -1,53 +1,6 @@
-/*
-    common styles
-*/
-
-@keyframes spin {
-    0% {
-        transform: rotate(360deg);
-    }
-    100% {
-        transform: rotate(0deg);
-    }
-}
-
-@-moz-keyframes spin {
-    0% {
-        -moz-transform: rotate(360deg);
-    }
-    100% {
-        -moz-transform: rotate(0deg);
-    }
-}
-
-@-webkit-keyframes spin {
-    0% {
-        -webkit-transform: rotate(360deg);
-    }
-    100% {
-        -webkit-transform: rotate(0deg);
-    }
-}
-
-@-o-keyframes spin {
-    0% {
-        -o-transform: rotate(360deg);
-    }
-    100% {
-        -o-transform: rotate(0deg);
-    }
-}
-
-.spin {
-    animation: spin 3.5s linear 0s infinite normal;
-    -moz-animation: 3.5s linear 0s normal none infinite spin;
-    -webkit-animation: spin 3.5s linear 0s infinite normal;
-    -o-animation: spin 3.5s linear 0s infinite normal;
-}
-
-/*
-    Upload styles
-*/
+/*****************************************************
+    MASK AND POPUP
+*****************************************************/
 .mask {
     position: fixed;
     width: 100%;
@@ -83,9 +36,9 @@
     }
 }
 
-/**
-    JCROP
-**/
+/*****************************************************
+    JCrop fix
+*****************************************************/
 .jcrop-keymgr {
     opacity: 0;
 }
@@ -94,6 +47,9 @@
     margin: 0 auto;
 }
 
+/*****************************************************
+    PREVIEW
+*****************************************************/
 .preview {
     width: 200px;
 }
@@ -104,18 +60,13 @@
     }
 }
 
-.hidden_form {
-    display: none;
-}
-
+/*****************************************************
+    UPLOAD
+*****************************************************/
 .juice_upload {
     padding-top: 20px;
     height: auto !important;
     min-width: 34px;
-
-    label {
-        display: none;
-    }
 
     .juice_upload_controls {
         margin: 0 0 20px 10px;
@@ -144,6 +95,12 @@
 
     }
 
+    .juice_upload_collection_container {
+        > div {
+            float: left;
+        }
+    }
+
     .form-control {
         height: auto;
         min-height: 34px;
@@ -158,7 +115,7 @@
     }
 
     .juice_upload_item {
-        float: left;
+//        float: left;
         margin: 0 10px;
         position: relative;
 
@@ -239,3 +196,12 @@
         }
     }
 }
+
+.hidden_form {
+    display: none;
+}
+
+.error {
+    color: red;
+}
+

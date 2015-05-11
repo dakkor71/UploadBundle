@@ -15,6 +15,7 @@ class ImageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $attr = $options['field_attr'];
+        $attr['class'] = 'test';
         $buttonLabel = $options['button_label'];
         $accept = $options['accept'];
 
@@ -23,7 +24,7 @@ class ImageType extends AbstractType
                 'label' => false,
                 'button_label' => $buttonLabel,
                 'accept' => $accept,
-                'attr' => $attr
+                'attr' => $attr,
             ))
         ;
     }
@@ -34,8 +35,9 @@ class ImageType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'button_label' => '',
-            'accept' => '',
+            'upload_class' => 'juice_upload',
+            'button_label' => 'Upload',
+            'accept' => '.jpg, .png',
             'field_attr' => array(),
             'data_class' => 'Juice\UploadBundle\Entity\Media',
             'attr' => array(

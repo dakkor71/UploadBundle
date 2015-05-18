@@ -22,8 +22,12 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('tmp_upload_dir')->defaultValue('uploads')->end() // or whatever default value
-                ->scalarNode('final_upload_dir')->defaultValue('media')->end() // or whatever default value
+                ->scalarNode('tmp_upload_dir')
+                    ->defaultValue('uploads')
+                ->end()
+                ->scalarNode('final_upload_dir')
+                    ->defaultValue('media')
+                ->end()
             ->end()
         ;
 

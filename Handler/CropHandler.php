@@ -2,17 +2,14 @@
 
 namespace Juice\UploadBundle\Handler;
 
-use Symfony\Component\DependencyInjection\Container;
 use Juice\UploadBundle\Lib\Globals;
+
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
+use Imagine\Image\Point;
 
 class CropHandler
 {
-    private $container;
-
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
 
     public function cropImage($request, $coordinates, $fileName)
     {
@@ -25,25 +22,13 @@ class CropHandler
             $coordinates['y'] = 0;
         }
 
-        # The controller service
-        $imagemanagerResponse = $this->container->get('liip_imagine.controller');
+        $imagine = new Imagine();
+        $image = $imagine
+            ->open(Globals::getTmpUploadDir() . '/' . $fileName);
 
-        # The filter configuration service
-        $filterConfiguration = $this->container->get('liip_imagine.filter.configuration');
-
-        # Get the filter settings
-        $configuration = $filterConfiguration->get('custom_crop');
-
-        # Update filter settings
-        $configuration['filters']['crop']['size'] = array($coordinates['w'], $coordinates['h']);
-        $configuration['filters']['crop']['start'] = array($coordinates['x'], $coordinates['y']);
-        $filterConfiguration->set('custom_crop', $configuration);
-
-        # Apply the filter
-        $imagemanagerResponse->filterAction($request, Globals::getTmpUploadDir() . '/' . $fileName, 'custom_crop');
-
-        # Move the img from temp
-        rename('media/cache/custom_crop/' . Globals::getTmpUploadDir() . '/' . $fileName, Globals::getTmpUploadDir() . '/' . $fileName);
+        $image
+            ->crop(new Point($coordinates['x'], $coordinates['y']), new Box($coordinates['w'], $coordinates['h']))
+            ->save(Globals::getTmpUploadDir() . '/' . $fileName);
 
         return $result = array(
             'status' => 'success'

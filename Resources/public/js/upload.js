@@ -1,30 +1,44 @@
+var uploadErrors = false;
+
+if (typeof Backbone == "undefined") {
+    alert('Please add Backbone.js');
+    uploadErrors = true;
+}
+
+if (typeof _ == "undefined") {
+    alert('Please add Underscore.js');
+    uploadErrors = true;
+}
+
 var cordinates;
 var uploadedImages = new Array();
 
+
+if (uploadErrors == false) {}
 var uploadView = Backbone.View.extend({
-    
+
     requiredPaths : ["crop", "upload"],
     requiredFormData : [],
-    
+
     paths : {},
 
     events: {
         'sortElements': 'sortItems',
         'click .remove': 'removeItem'
     },
-    
+
     initialize : function(options) {
         var self = this;
-        
+
         //set paths
         for(var i in self.requiredPaths) {
             if(!options.paths[self.requiredPaths[i]]) {
                 alert('Please set all paths!');
-                return;    
+                return;
             }
             self.paths[self.requiredPaths[i]] = options.paths[self.requiredPaths[i]];
         }
-        
+
         this.$el.each(function() {
             self.initUploader(this);
         });
@@ -32,7 +46,7 @@ var uploadView = Backbone.View.extend({
         self.initRemoveUpload();
         self.initSorting();
     },
-    
+
     initUploader: function(el) {
         var self = this;
         var $el = $(el).find(".file_upload");
@@ -42,7 +56,7 @@ var uploadView = Backbone.View.extend({
         var options = {};
 
         self.prepareOptionsAndData(options , containerData , $container);
-        
+
         if(!self.validData($container , options)) {
             return;
         }
@@ -85,7 +99,7 @@ var uploadView = Backbone.View.extend({
             });
         });
     },
-    
+
     validData : function($container , options) {
         for(var i in this.requiredFormData) {
             if(!options.formData[this.requiredFormData[i]]) {
@@ -93,24 +107,24 @@ var uploadView = Backbone.View.extend({
                 return false;
             }
         }
-        
+
         if(!$container.data('callback') || !typeof(this[$container.data('callback')])) {
             alert('defind callback');
             return false;
         }
-        
+
         return true;
     },
-    
+
     prepareOptionsAndData : function(options , elementData, $container) {
 
         var formData = {};
-        
+
         for (var i in elementData) {
-            
+
             var optionsMatch = i.match(/(options)(.+)/);
             var formMatch = i.match(/(form)(.+)/);
-            
+
             if (optionsMatch) {
                 this.setObjectValueFromMatch(options , optionsMatch , elementData[i]);
             } else if(formMatch) {
@@ -119,17 +133,17 @@ var uploadView = Backbone.View.extend({
                 $container.data(i , elementData[i]);
             }
         }
-        
+
         options.formData = formData;
-        
+
         return options;
     },
-    
+
     setObjectValueFromMatch: function(object , match , value) {
         var name = match[2].toLowerCase();
         object[name] = value;
     },
-    
+
     uploadSuccessHandler : function(data, $container) {
         var data = eval(data);
 
@@ -143,8 +157,8 @@ var uploadView = Backbone.View.extend({
             this.cropHandler($container);
             return;
         }
-        
-        this[$container.data('callback')]($container, data.params.fileName);
+
+        this[$container.data('callback')]($container, data.params);
     },
 
     cropHandler: function($container) {
@@ -167,24 +181,24 @@ var uploadView = Backbone.View.extend({
             }
             return;
         }
-        
+
         if(minSize['width'] > size['width'] || minSize['height'] > size['height']) {
             alert('Please upload image with min size ' + minSize['width'] + ' / ' + minSize['height']);
             uploadedImages.shift();
             this.cropHandler($container);
             return;
         }
-        
+
         //add popup
         var popup = cropPopupTemplate;
-        $container.append(popup({file : '/' + config.tmp_upload_dir + currentPhoto.fileName}));
+        $container.append(popup({file : currentPhoto.path}));
         $('#cropPopup').show();
-        
+
         //and modal on close
         $('.mask').click(function ($container) {
             self.removePopup($container)
         });
-        
+
         //init crop after image is loaded
         cropImage = new Image();
         cropImage.onload = function() {
@@ -192,7 +206,7 @@ var uploadView = Backbone.View.extend({
             self.cropInit($container.data('ratio') , minSize ,  size);
         };
 
-        cropImage.src = '/' + config.tmp_upload_dir + currentPhoto.fileName;
+        cropImage.src = currentPhoto.path;
     },
 
     removePopup : function($container) {
@@ -215,7 +229,7 @@ var uploadView = Backbone.View.extend({
 
         xsize = $pcnt.width(),
         ysize = $pcnt.height();
-        
+
         $('#cropTarget').Jcrop({
             onSelect : self.updateCordinates,
             onChange : self.updateCordinates,
@@ -226,18 +240,18 @@ var uploadView = Backbone.View.extend({
             boxWidth: 568,
             boxHeight: 568
         });
-        
+
         $('.crop-button').click(function() {
             self.onCropButtonClickHandler();
         });
     },
 
     resetCordinates : function(c) {
-        cordinates = {};    
+        cordinates = {};
     },
 
     updateCordinates : function(c) {
-        cordinates = c;  
+        cordinates = c;
     },
 
     onCropButtonClickHandler: function() {
@@ -250,7 +264,7 @@ var uploadView = Backbone.View.extend({
 
     cropImage: function() {
         var self = this;
-        $.ajax({                
+        $.ajax({
             url: self.paths.crop,
             type: 'POST',
             dataType: 'json',
@@ -262,7 +276,7 @@ var uploadView = Backbone.View.extend({
                 var data = eval(data);
                 if (data.status == 'success') {
                     $container = $('#cropPopup').parent();
-                    self[$container.data('callback')]($container, uploadedImages[0].fileName);
+                    self[$container.data('callback')]($container, uploadedImages[0]);
                     self.removePopup($container);
                 }
             }
@@ -310,11 +324,11 @@ var uploadView = Backbone.View.extend({
         }
     },
 
-    handleSingleImage: function($container, fileName) {
+    handleSingleImage: function($container, params) {
         var html = imageTpl({
             'inputName' : $container.data('input-name'),
-            'fileName' : fileName,
-            'fileNameWithPath' : '/' + config.tmp_upload_dir + fileName + '?' + Math.random()
+            'fileName' : params.fileName,
+            'fileNameWithPath' : params.path + '?' + Math.random()
         });
 
         $container.find('.juice_upload_form_container').html(html);
@@ -322,10 +336,10 @@ var uploadView = Backbone.View.extend({
         this.delegateEvents();
     },
 
-    handleSingleFile: function($container, fileName) {
+    handleSingleFile: function($container, params) {
         var html = fileTpl({
             'inputName' : $container.data('input-name'),
-            'fileName' : fileName
+            'fileName' : params.fileName
         });
 
         $container.find('.juice_upload_form_container').html(html);
@@ -333,8 +347,7 @@ var uploadView = Backbone.View.extend({
         this.delegateEvents();
     },
 
-    handleGalleryImage: function($container, fileName) {
-
+    handleGalleryImage: function($container, params) {
         // Get the data-prototype explained earlier
         var prototype = $container.data('prototype');
 
@@ -342,14 +355,12 @@ var uploadView = Backbone.View.extend({
         // instead be a number based on how many items we have
         var newForm = prototype.replace(/__name__/g, 1000 + $container.find('.juice_upload_item').length);
 
-        fileNameWithPath = '/' + config.tmp_upload_dir + fileName + '?' + Math.random();
+        fileNameWithPath = params.path + '?' + Math.random();
 
-        //var $galleryItem = $(galleryItem({file : fileNameWithPath, form : newForm}));
         var $newForm = $(newForm);
+        $newForm.addClass('juice_upload_gallery_item');
 
-        console.log(newForm);
-
-        $newForm.find('.juice_upload_form_container input').attr('value', fileName);
+        $newForm.find('.juice_upload_form_container input').attr('value', params.fileName);
         $newForm.find('.juice_upload_form_container.preview').append('<img src="' + fileNameWithPath  + '"/>');
         $newForm.find('input.position').attr('value', $('.juice_upload_item').length+1);
 

@@ -23,6 +23,21 @@
     </div>
 {% endblock %}
 
+{% block preview %}
+    {% if form.vars.value %}
+        {% set finalPath = form.vars.finalFolder ~ "/" ~ form.vars.value %}
+        {% set tmpPath = form.vars.tmpFolder ~ "/" ~ form.vars.value %}
+
+        {% if form.parent.vars.value.id and finalPath | checkFile %}
+            <img src="/{{ finalPath }}" />
+        {%  elseif tmpPath | checkFile%}
+            <img src="/{{ tmpPath }}" />
+        {%  else %}
+            Image ERROR!!!
+        {%  endif %}
+    {% endif %}
+{% endblock preview %}
+
 {% block juice_image_type_widget %}
     <div class="juice_upload_container clearfix" {% for key, value in form.vars.attr %}{{ key }}="{{ value }}" {% endfor %} data-input-name="{{ form.vars.full_name }}">
         {{ block('controls') }}
@@ -35,18 +50,7 @@
                 </div>
             </div>
             <div class="juice_upload_form_container preview">
-                {% if form.vars.value %}
-                    {% set finalPath = final_upload_dir ~ "/" ~ form.vars.value %}
-                    {% set tmpPath = tmp_upload_dir ~ "/" ~ form.vars.value %}
-
-                    {% if form.parent.vars.value.id and finalPath | checkFile %}
-                        <img src="/{{ finalPath }}" />
-                    {%  elseif tmpPath | checkFile%}
-                        <img src="/{{ tmpPath }}" />
-                    {%  else %}
-                        Image ERROR!!!
-                    {%  endif %}
-                {%  endif %}
+                {{ block('preview') }}
                 <div class="hidden_form">{{ form_widget(form) }}</div>
             </div>
         </div>
@@ -77,7 +81,7 @@
 
             <div class="juice_upload_collection_container gallery">
                 {% for child in form.children %}
-                    {{ form_widget(child, {attr : {class : 'juice_upload_gallery_item'}}) }}
+                    {{ form_widget(child) }}
                 {% endfor %}
             </div>
         </div>
@@ -94,22 +98,13 @@
             </div>
         </div>
         <div class="juice_upload_form_container preview">
-            {% if form.vars.value %}
-                {% set finalPath = final_upload_dir ~ "/" ~ form.vars.value %}
-                {% set tmpPath = tmp_upload_dir ~ "/" ~ form.vars.value %}
-
-                {% if form.parent.vars.value.id and finalPath | checkFile %}
-                    <img src="/{{ finalPath }}" />
-                {%  elseif tmpPath | checkFile%}
-                    <img src="/{{ tmpPath }}" />
-                {%  else %}
-                    Image ERROR!!!
-                {%  endif %}
-            {%  endif %}
+            {{ block('preview') }}
             <div class="hidden_form">{{ form_widget(form) }}</div>
         </div>
     </div>
 {% endblock juice_gallery_image_type_widget %}
+
+
 
 
 

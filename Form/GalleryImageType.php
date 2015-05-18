@@ -34,6 +34,8 @@ class GalleryImageType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
+            'by_reference' => false,
+            'required' => false,
             'upload_class' => 'juice_upload',
             'button_label' => 'Upload',
             'accept' => '.jpg, .png',

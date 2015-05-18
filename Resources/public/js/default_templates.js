@@ -1,28 +1,30 @@
-var cropPopupTemplate = _.template(
-    '<div class="mask"></div>' +
+if (uploadErrors == false) {
+    var cropPopupTemplate = _.template(
+        '<div class="mask"></div>' +
         '<div id="cropPopup" class="popup">' +
-            '<div class="popup-header">' +
-            '<span class="close"></span>' +
-            '<h4 class="popup-title">Crop image</h4>' +
+        '<div class="popup-header">' +
+        '<span class="close"></span>' +
+        '<h4 class="popup-title">Crop image</h4>' +
         '</div>' +
         '<div class="popup-body">' +
-            '<img class="hidden" src="<%= file %>" id="cropTarget" alt="[Jcrop Example]" />'+
+        '<img class="hidden" src="<%= file %>" id="cropTarget" alt="[Jcrop Example]" />' +
         '</div>' +
         '<div class="popup-footer">' +
-            '<button type="button" class="juice_upload_button crop-button">Crop</button>' +
+        '<button type="button" class="juice_upload_button crop-button">Crop</button>' +
         '</div>' +
-    '</div>'
-);
+        '</div>'
+    );
 
-var fileTpl = _.template(
-    '<input type="hidden" name="<%= inputName %>" value="<%= fileName %>" />' +
-    '<div class="alert alert-success juice_upload_single_file" role="alert">' +
+    var fileTpl = _.template(
+        '<input type="hidden" name="<%= inputName %>" value="<%= fileName %>" />' +
+        '<div class="alert alert-success juice_upload_single_file" role="alert">' +
         '<%= fileName %>' +
         '<div class="button remove">X</div>' +
-    '</div>'
-);
+        '</div>'
+    );
 
-var imageTpl = _.template(
-    '<input type="hidden" name="<%= inputName %>" value="<%= fileName %>" />' +
-    '<img src="<%= fileNameWithPath %>" />'
-);
+    var imageTpl = _.template(
+        '<input type="hidden" name="<%= inputName %>" value="<%= fileName %>" />' +
+        '<img src="<%= fileNameWithPath %>" />'
+    );
+}

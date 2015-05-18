@@ -32,6 +32,9 @@ class FileType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
+            'error_bubbling' => false,
+            'required' => false,
+            'by_reference' => false,
             'button_label' => 'Upload',
             'field_attr' => array(),
             'data_class' => 'Juice\UploadBundle\Entity\Media',

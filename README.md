@@ -24,17 +24,8 @@ juice_upload:
 
 TIP: you can add some prefix which will be protected by symfony2 security component
 
-### Parameters
-
-``` yaml
-# app/config/parameters.yml
-
-upload_template: bootstrap
-tmp_upload_dir : uploads
-final_upload_dir : media
-```
-
 ### Config
+
 
 Add to appKernel.php
 
@@ -45,6 +36,7 @@ new Juice\UploadBundle\JuiceUploadBundle(),
 ```
 
 ``` yaml
+
 # app/config/config.yml
 
 assetic:
@@ -52,21 +44,24 @@ assetic:
 
 twig:
     # ...
-    globals:
-            upload_template: "%upload_template%"
-            tmp_upload_dir: "%tmp_upload_dir%"
-            final_upload_dir: "%final_upload_dir%"
-        form:
-            resources:
-            - 'JuiceUploadBundle::%upload_template%_form_fields.html.twig'
+    form:
+        resources:
+        - 'JuiceUploadBundle::default_form_fields.html.twig'
+        
+juice_upload:
+    tmp_upload_dir: "uploads"
+    final_upload_dir: "media"
+    
 ```
 
 ### Main twig layout
 
+Replace "default" to "bootstrap" in css and js files if you are using bootstrap layout.
+
 Add CSS:
 
 ``` html
-{{ include('JuiceUploadBundle:Css:' ~ upload_template ~ '.css.html.twig') }}
+{{ include('JuiceUploadBundle:Css:default.css.html.twig') }}
 ```
 
 Add JS. Include JS after (backbone, underscore) and before you init upload object):
@@ -78,35 +73,44 @@ Add JS. Include JS after (backbone, underscore) and before you init upload objec
 
 ``` html
 {% javascripts
-    '@NHBBackendBundle/Resources/public/js/bootstrap.js'
-    '@JuicejQueryBundle/Resources/public/js/libs/underscore.js'
-    '@JuicejQueryBundle/Resources/public/js/libs/backbone.js'
-    '@JuicejQueryBundle/Resources/public/js/script.js'
-    '@JuicejQueryBundle/Resources/public/js/libs/jquery-ui-1.10.3.custom.js'
+    '@JuiceUploadBundle/Resources/public/js/libs/jquery-1.11.3.min.js'
+    '@JuiceUploadBundle/Resources/public/js/libs/underscore-min.js'
+    '@JuiceUploadBundle/Resources/public/js/libs/backbone-min.js'
 %}
 <script type="text/javascript" src="{{ asset_url }}"></script>
 {% endjavascripts %}
 
-{{ include('JuiceUploadBundle:Js:' ~ upload_template ~ '.js.html.twig') }}
+{{ include('JuiceUploadBundle:Js:default.js.html.twig') }}
 
 {% javascripts '@NHBBackendBundle/Resources/public/js/admin.js' %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
 {% endjavascripts %}
 ```
 
-### Gallery
+### Upload init
 
-##### Gallery parent:
+``` html
+var customUploadView = uploadView.extend({});
+
+uploadView = new customUploadView({
+    el: $('.juice_upload_container'),
+    paths: {
+        crop: '/crop_file',
+        upload: '/upload_file'
+    }
+});
+```
+
+### Gallery container entity
 
 ``` php
 
     /**
-     * @ORM\ManyToMany(targetEntity="Photos", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity="GalleryItem", cascade={"persist", "remove"}, orphanRemoval=true)
      * @ORM\JoinTable(name="upload_images",
      *      joinColumns={@ORM\JoinColumn(name="upload_id", referencedColumnName="id", onDelete="cascade")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="image_id", referencedColumnName="id", unique=true, onDelete="cascade")}
      *      )
-     * @ORM\OrderBy({"position" = "ASC"})
      **/
     private $images;
 
@@ -117,72 +121,42 @@ Add JS. Include JS after (backbone, underscore) and before you init upload objec
     
 ```
 
-##### Gallery parent form field
+##### gallery container form field
 
 ``` php
     ->add('images', 'juice_gallery_field', array(
-        'type' => new ImagesType(),
+        'type' => new GalleryItem(),
         'label' => 'Gallery',
-        'by_reference' => false,
-        'multi' => true,
-        'options' => array(
-            'label' => false
-        ),
         'attr' => array(
-            'class' => 'offers sortable'
-        ),
-        'allow_add' => true,
-        'allow_delete' => true,
-    ))
-```
-
-##### Gallery child:
-
-``` php
-
-    /**
-     * @ORM\OneToOne(targetEntity="\Juice\UploadBundle\Entity\Media", cascade={"persist"}, orphanRemoval=true)
-     * @ORM\JoinColumn(name="image_id", referencedColumnName="id", onDelete="SET NULL", nullable=true)
-     */
-    private $photo;
-    
-    public function setPhoto($image)
-    {
-        //clear image object if new image is null on empty
-        if ($image == NULL || $image->getFile() == NULL) {
-            $this->photo = NULL;
-
-            dump($this->photo);
-            return $this;
-        }
-
-        if ($this->photo == NULL) {
-            $this->photo = $image;
-        } else {
-            $this->photo->setFile($image->getFile());
-        }
-
-        return $this;
-    }
-
-    public function getPhoto()
-    {
-        return $this->photo;
-    }
-```
-
-##### Gallery child form field
-
-``` php
-
-    ->add('photo', 'juice_gallery_child_field', array(
-        'required' => false,
-        'by_reference' => false,
-        'label' => false,
-        'field_attr' => array(
-            'filter' => 'home_big',
+            'class' => 'juice_upload_gallery_item',
         )
     ))
+```
+
+##### Gallery item entity:
+
+Add single image to gallery child entity
+
+### Gallery Sorting
+
+##### Gallery container entity
+
+To add sorting you have to add 
+
+``` php
+     * @ORM\OrderBy({"position" = "ASC"})
+```
+
+to gallery collection entity and position fields to gallery Item entity.
+
+##### Gallery Item entity
+
+position form fields should contain proper class
+
+``` php
+     ->add('position', 'hidden', array(
+         'attr' => array('class' => 'position')
+     ))
 ```
 
 ### Single image
@@ -225,9 +199,6 @@ min options
 
 ``` php
     ->add('photo', 'juice_single_image_field', array(
-        'required' => false,
-        'error_bubbling' => false,
-        'by_reference' => false,
         'field_attr' => array(
             'filter' => 'home_big',
         )
@@ -238,9 +209,6 @@ full options
 
 ``` php
     ->add('photo', 'juice_single_image_field', array(
-        'required' => false,
-        'error_bubbling' => false,
-        'by_reference' => false,
         'label' => 'main label name',
         'button_label' => 'button name', // DEFAULT 'Upload' | upload button label
         'accept' => '.png, .jpg', // DEFAULT '.jpg, .png' | upload button label
@@ -292,18 +260,13 @@ full options
 min options
 
 ``` php
-    ->add('file', 'juice_single_file_field', array(
-        'required' => false,
-        'by_reference' => false
-    ))
+    ->add('file', 'juice_single_file_field')
 ```
 
 full options
 
 ``` php
     ->add('file', 'juice_single_file_field', array(
-        'required' => false,
-        'by_reference' => false,
         'label' => 'Upload file', // main label
         'button_label' => 'file upload', // DEFAULT default 'Upload' | upload button label
         'field_attr' => array(

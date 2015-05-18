@@ -15,6 +15,7 @@ class BaseGalleryType extends AbstractUploadType
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
+        dump($options);
         $this->addVars($view, $options);
     }
 
@@ -24,16 +25,23 @@ class BaseGalleryType extends AbstractUploadType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'by_reference' => false,
             'default_data' => array(
                 'data-form-kind' => 'file',
                 'data-callback' => 'handleGalleryImage',
                 'data-crop' => 'false',
             ),
+            'options' => array(
+                'label' => false
+            ),
             'upload_class' => 'juice_upload',
             'button_label' => 'Upload',
             'accept' => '',
-            'multi' => false
+            'multi' => true,
+            'attr' => array(
+                'class' => 'sortable'
+            ),
+            'allow_add' => true,
+            'allow_delete' => true,
         ));
     }
 

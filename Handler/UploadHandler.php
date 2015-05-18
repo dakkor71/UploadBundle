@@ -38,7 +38,8 @@ abstract class UploadHandler
         $result = array(
             'success' => true,
             'params' => array(
-                'fileName' => $this->tmpFileName
+                'fileName' => $this->tmpFileName,
+                'path' => '/' . $this->getTmpFileFolder() . '/' . $this->tmpFileName
             )
         );
 

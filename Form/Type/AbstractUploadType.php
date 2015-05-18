@@ -8,8 +8,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
 use Liip\ImagineBundle\Imagine\Filter\FilterConfiguration;
 
+use Juice\UploadBundle\Lib\Globals;
+
 class AbstractUploadType extends AbstractType
 {
+
     /**
      * @var FilterConfiguration
      */
@@ -31,6 +34,9 @@ class AbstractUploadType extends AbstractType
                 $view->vars['attr'][$key] = $value;
             }
         }
+
+        $view->vars['tmpFolder'] = Globals::getTmpUploadDir();
+        $view->vars['finalFolder'] = Globals::getFinalUploadDir();
     }
 
     protected function addFilter(&$view) {

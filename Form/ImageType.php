@@ -35,6 +35,9 @@ class ImageType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
+            'error_bubbling' => false,
+            'required' => false,
+            'by_reference' => false,
             'upload_class' => 'juice_upload',
             'button_label' => 'Upload',
             'accept' => '.jpg, .png',

@@ -38,14 +38,13 @@ class ImageType extends AbstractType
             'error_bubbling' => false,
             'required' => false,
             'by_reference' => false,
-            'upload_class' => 'juice_upload',
-            'button_label' => 'Upload',
-            'accept' => '.jpg, .png',
-            'field_attr' => array(),
             'data_class' => 'Juice\UploadBundle\Entity\Media',
             'attr' => array(
                 'class' => 'juice_upload'
-            )
+            ),
+            'button_label' => 'Upload',
+            'accept' => '.jpg, .png',
+            'field_attr' => array(),
         ));
     }
 

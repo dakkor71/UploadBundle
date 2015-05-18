@@ -32,7 +32,6 @@ class BaseImageType extends AbstractUploadType
                 'data-callback' => 'handleSingleImage',
                 'data-crop' => 'false'
             ),
-            'upload_class' => '',
             'button_label' => '',
             'accept' => '',
             'multi' => false

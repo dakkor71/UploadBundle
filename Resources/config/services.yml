@@ -12,9 +12,10 @@ services:
             - { name: form.type, alias: juice_single_file_field }
 
     juice_upload_bundle.juice_gallery_field:
-        class: Juice\UploadBundle\Form\Type\BaseGalleryType
+        class: Juice\UploadBundle\Form\GalleryType
         tags:
             - { name: form.type, alias: juice_gallery_field }
+        arguments: [ "@liip_imagine.filter.manager" ]
 
     juice_upload_bundle.juice_gallery_child_field:
             class: Juice\UploadBundle\Form\GalleryImageType

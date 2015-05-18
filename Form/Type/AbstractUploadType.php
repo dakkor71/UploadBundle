@@ -25,7 +25,6 @@ class AbstractUploadType extends AbstractType
 
     public function addVars(&$view, $options) {
         $view->vars['button_label'] = $options['button_label'];
-        $view->vars['upload_class'] = $options['upload_class'];
         $view->vars['accept'] = $options['accept'];
         $view->vars['multi'] = isset($options['multi']) ? $options['multi'] : false;
 

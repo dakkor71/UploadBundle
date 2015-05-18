@@ -125,10 +125,32 @@ uploadView = new customUploadView({
 
 ``` php
     ->add('images', 'juice_gallery_field', array(
-        'type' => new GalleryItem(),
+        'type' => new ImagesType(),
         'label' => 'Gallery',
-        'attr' => array(
-            'class' => 'juice_upload_gallery_item',
+        'field_attr' => array(
+            'filter' => 'home_big',
+        )
+    ))
+```
+
+If you want to add some custom class to upload container check full options
+
+##### gallery container form field full
+
+``` php
+    ->add('images', 'juice_gallery_field', array(
+        'type' => new ImagesType(),
+        'label' => 'Gallery',
+        'options' => array(
+            'attr' => array(
+                'class' => 'juice_upload_gallery_item',
+            )
+        ),
+        'field_attr' => array(
+            'filter' => 'home_big',
+            'data-form-kind' => 'image',
+            'data-callback' => 'handleGalleryImage',
+            'data-crop' => 'false',
         )
     ))
 ```
@@ -205,6 +227,8 @@ min options
     ))
 ```
 
+If you want to add some custom class to upload container check full options
+
 full options
 
 ``` php
@@ -212,6 +236,9 @@ full options
         'label' => 'main label name',
         'button_label' => 'button name', // DEFAULT 'Upload' | upload button label
         'accept' => '.png, .jpg', // DEFAULT '.jpg, .png' | upload button label
+        'attr' => array(
+            'class' => 'juice_upload someCustomClass'
+        ),
         'field_attr' => array(
             'filter' => 'home_big', // REQUIRED | liip imagine filter which we want to use
             'data-form-kind' => 'image', // DEFAULT 'image' | if type is defined as image, controller will return dimensions arter upload
@@ -220,6 +247,8 @@ full options
         )
     ))
 ```
+
+
 
 ### Single file
 
@@ -269,8 +298,12 @@ full options
     ->add('file', 'juice_single_file_field', array(
         'label' => 'Upload file', // main label
         'button_label' => 'file upload', // DEFAULT default 'Upload' | upload button label
+        'accept' => '.txt',
         'field_attr' => array(
             'data-callback' => 'handleSingleFile' // DEFAULT 'handleSingleFile' | which js function will be triggered after upload
+        ),
+        'attr' => array(
+            'class' => 'juice_upload someCustomClass'
         )
     ))
 ```

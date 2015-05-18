@@ -276,6 +276,7 @@ var uploadView = Backbone.View.extend({
                 var data = eval(data);
                 if (data.status == 'success') {
                     $container = $('#cropPopup').parent();
+                    console.log($container.data('callback'));
                     self[$container.data('callback')]($container, uploadedImages[0]);
                     self.removePopup($container);
                 }
@@ -348,6 +349,7 @@ var uploadView = Backbone.View.extend({
     },
 
     handleGalleryImage: function($container, params) {
+        console.log('handle');
         // Get the data-prototype explained earlier
         var prototype = $container.data('prototype');
 

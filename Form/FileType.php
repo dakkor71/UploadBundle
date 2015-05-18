@@ -16,12 +16,14 @@ class FileType extends AbstractType
     {
         $attr = $options['field_attr'];
         $buttonLabel = $options['button_label'];
+        $accept = $options['accept'];
 
         $builder
             ->add('file', 'juice_file_type', array(
                 'label' => false,
                 'button_label' => $buttonLabel,
-                'attr' => $attr
+                'attr' => $attr,
+                'accept' => $accept
             ))
         ;
     }
@@ -35,12 +37,14 @@ class FileType extends AbstractType
             'error_bubbling' => false,
             'required' => false,
             'by_reference' => false,
-            'button_label' => 'Upload',
-            'field_attr' => array(),
             'data_class' => 'Juice\UploadBundle\Entity\Media',
             'attr' => array(
                 'class' => 'juice_upload'
-            )
+            ),
+
+            'button_label' => 'Upload',
+            'accept' => '',
+            'field_attr' => array(),
         ));
     }
 

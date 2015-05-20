@@ -11,11 +11,14 @@ use Juice\UploadBundle\Handler\ImageUploadHandler;
 use Juice\UploadBundle\Handler\FileUploadHandler;
 use Juice\UploadBundle\Handler\RemoteUploadHandler;
 
+/**
+ * @Route("/jub")
+ */
 class UploadController extends Controller
 {
 
     /**
-     * @Route("/upload_file" , name="_upload_file")
+     * @Route("/upload_file", name="jub_upload_file")
      */
     public function uploadAction()
     {
@@ -41,7 +44,7 @@ class UploadController extends Controller
     }
 
     /**
-     * @Route("/copy_remote_file" , name="_copy_remote_file")
+     * @Route("/copy_remote_file", name="jub_copy_remote_file")
      */
     public function copyRemoteAction()
     {
@@ -60,7 +63,7 @@ class UploadController extends Controller
     }
 
     /**
-     * @Route("/crop_file" , name="_crop_file")
+     * @Route("/crop_file", name="jub_crop_file")
      */
     public function cropAction()
     {

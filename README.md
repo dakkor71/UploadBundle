@@ -48,7 +48,7 @@ twig:
         resources:
         - 'JuiceUploadBundle::default_form_fields.html.twig'
         
-juice_upload:
+juice_upload: # optional, these are default values:
     absolute_path: true
     tmp_upload_dir: "uploads"
     final_upload_dir: "media"

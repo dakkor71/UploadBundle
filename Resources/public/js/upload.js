@@ -1,12 +1,12 @@
 var uploadErrors = false;
 
 if (typeof Backbone == "undefined") {
-    alert('Please add Backbone.js');
+    self.alertCallback('Please add Backbone.js');
     uploadErrors = true;
 }
 
 if (typeof _ == "undefined") {
-    alert('Please add Underscore.js');
+    self.alertCallback('Please add Underscore.js');
     uploadErrors = true;
 }
 
@@ -17,7 +17,6 @@ var uploadedImages = new Array();
 if (uploadErrors == false) {}
 var uploadView = Backbone.View.extend({
 
-    requiredPaths : ["crop", "upload", "remote"],
     requiredFormData : [],
 
     paths : {},
@@ -30,14 +29,8 @@ var uploadView = Backbone.View.extend({
     initialize : function(options) {
         var self = this;
 
-        //set paths
-        for(var i in self.requiredPaths) {
-            if(!options.paths[self.requiredPaths[i]]) {
-                alert('Please set all paths!');
-                return;
-            }
-            self.paths[self.requiredPaths[i]] = options.paths[self.requiredPaths[i]];
-        }
+
+        self.paths = juiceUploadBundlePaths;
 
         this.$el.each(function() {
             self.initUploader(this);
@@ -45,6 +38,10 @@ var uploadView = Backbone.View.extend({
 
         self.initRemoveUpload();
         self.initSorting();
+    },
+    
+    alertCallback: function (message) {
+        self.alertCallback(message);
     },
 
     initUploader: function(el) {
@@ -72,7 +69,7 @@ var uploadView = Backbone.View.extend({
                 self.uploadSuccessHandler(data.result, $container);
             },
             'fail' : function(e, data) {
-                //alert('The error was: ' + errorType);
+                //self.alertCallback('The error was: ' + errorType);
             }
         });
 
@@ -103,13 +100,13 @@ var uploadView = Backbone.View.extend({
     validData : function($container , options) {
         for(var i in this.requiredFormData) {
             if(!options.formData[this.requiredFormData[i]]) {
-                alert('Please set file ' + this.requiredFormData[i]);
+                self.alertCallback('Please set file ' + this.requiredFormData[i]);
                 return false;
             }
         }
 
         if(!$container.data('callback') || !typeof(this[$container.data('callback')])) {
-            alert('defind callback');
+            self.alertCallback('defind callback');
             return false;
         }
 
@@ -148,7 +145,7 @@ var uploadView = Backbone.View.extend({
         var data = eval(data);
 
         if (data.status == 'error') {
-            alert(data.error);
+            self.alertCallback(data.error);
             return;
         }
 
@@ -183,7 +180,7 @@ var uploadView = Backbone.View.extend({
         }
 
         if(minSize['width'] > size['width'] || minSize['height'] > size['height']) {
-            alert('Please upload image with min size ' + minSize['width'] + ' / ' + minSize['height']);
+            self.alertCallback('Please upload image with min size ' + minSize['width'] + ' / ' + minSize['height']);
             uploadedImages.shift();
             this.cropHandler($container);
             return;
@@ -251,7 +248,7 @@ var uploadView = Backbone.View.extend({
 
     onCropButtonClickHandler: function() {
         if ($.isEmptyObject(cordinates)) {
-            alert('Please select crop area');
+            self.alertCallback('Please select crop area');
             return;
         }
         this.cropImage();
@@ -275,7 +272,7 @@ var uploadView = Backbone.View.extend({
                     self[$container.data('callback')]($container, uploadedImages[0]);
                     self.removePopup($container);
                 } else {
-                    alert(data.error);
+                    self.alertCallback(data.error);
                 }
             }
         });

@@ -48,14 +48,18 @@ twig:
         resources:
         - 'JuiceUploadBundle::default_form_fields.html.twig'
         
-juice_upload: # optional, these are default values:
+juice_upload: # optional, default values:
     absolute_path: true
     tmp_upload_dir: "uploads"
     final_upload_dir: "media"
     
 ```
 
-If your symfony2 is in subfolder you have to change absolute_path to false and also add base metatag to main template
+If your symfony2 is in subfolder you have to change absolute_path to false and also add base metatag to main template like this:
+
+``` twig
+<base href="{{ app.request.baseUrl }}/">
+```
 
 ### Main twig layout
 
@@ -96,11 +100,7 @@ Add JS. Include JS after (backbone, underscore) and before you init upload objec
 var customUploadView = uploadView.extend({});
 
 uploadView = new customUploadView({
-    el: $('.juice_upload_container'),
-    paths: {
-        crop: '/crop_file',
-        upload: '/upload_file'
-    }
+    el: $('.juice_upload_container')
 });
 ```
 

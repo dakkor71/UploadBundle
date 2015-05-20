@@ -29,7 +29,6 @@ var uploadView = Backbone.View.extend({
     initialize : function(options) {
         var self = this;
 
-
         self.paths = juiceUploadBundlePaths;
 
         this.$el.each(function() {
@@ -41,7 +40,7 @@ var uploadView = Backbone.View.extend({
     },
     
     alertCallback: function (message) {
-        self.alertCallback(message);
+        alert(message);
     },
 
     initUploader: function(el) {
@@ -268,7 +267,6 @@ var uploadView = Backbone.View.extend({
                 var data = eval(data);
                 if (data.status == 'success') {
                     $container = $('#cropPopup').parent();
-                    console.log($container.data('callback'));
                     self[$container.data('callback')]($container, uploadedImages[0]);
                     self.removePopup($container);
                 } else {
@@ -343,7 +341,6 @@ var uploadView = Backbone.View.extend({
     },
 
     handleGalleryImage: function($container, params) {
-        console.log('handle');
         // Get the data-prototype explained earlier
         var prototype = $container.data('prototype');
 

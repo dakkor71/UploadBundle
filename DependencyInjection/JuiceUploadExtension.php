@@ -24,6 +24,7 @@ class JuiceUploadExtension extends Extension
 
         $container->setParameter('tmp_upload_dir', $config['tmp_upload_dir']);
         $container->setParameter('final_upload_dir', $config['final_upload_dir']);
+        $container->setParameter('absolute_path', $config['absolute_path']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

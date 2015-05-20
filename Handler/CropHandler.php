@@ -11,7 +11,7 @@ use Imagine\Image\Point;
 class CropHandler
 {
 
-    public function cropImage($request, $coordinates, $fileName)
+    public function cropImage($coordinates, $fileName)
     {
         //prepare coordinates
         if ($coordinates['x'] < 0) {

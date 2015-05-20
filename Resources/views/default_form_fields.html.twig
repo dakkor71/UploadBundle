@@ -29,9 +29,9 @@
         {% set tmpPath = form.vars.tmpFolder ~ "/" ~ form.vars.value %}
 
         {% if form.parent.vars.value.id and finalPath | checkFile %}
-            <img src="/{{ finalPath }}" />
+            <img src="{{ finalPath }}" />
         {%  elseif tmpPath | checkFile%}
-            <img src="/{{ tmpPath }}" />
+            <img src="{{ tmpPath }}" />
         {%  else %}
             Image ERROR!!!
         {%  endif %}

@@ -21,7 +21,7 @@ class FileExtension extends \Twig_Extension
 
     public function fileFilter($path)
     {
-        return file_exists($path);
+        return file_exists(__DIR__ . '/../../../../../../web/' . $path);
     }
 
     public function getImageDimensions($filter)

@@ -12,5 +12,6 @@ class JuiceUploadBundle extends Bundle
         // Set some static globals
         Globals::setFinalUploadDir($this->container->getParameter('final_upload_dir'));
         Globals::setTmpUploadDir($this->container->getParameter('tmp_upload_dir'));
+        Globals::setAbsolutePath($this->container->getParameter('absolute_path'));
     }
 }

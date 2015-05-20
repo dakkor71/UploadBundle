@@ -39,7 +39,6 @@ class GalleryType extends AbstractUploadType
         $resolver->setDefaults(array(
             'field_attr' => array(),
             'default_data' => array(
-                'filter' => 'home_big',
                 'data-form-kind' => 'image',
                 'data-callback' => 'handleGalleryImage',
                 'data-crop' => 'false',

@@ -6,6 +6,7 @@ class Globals
 {
     protected static $tmpUploadDir;
     protected static $finalUploadDir;
+    protected static $absolutePath;
 
     public static function setTmpUploadDir($dir)
     {
@@ -25,5 +26,19 @@ class Globals
     public static function getFinalUploadDir()
     {
         return self::$finalUploadDir;
+    }
+
+    public static function setAbsolutePath($flag)
+    {
+        self::$absolutePath = $flag;
+    }
+
+    public static function getAbsolutePath()
+    {
+        return self::$absolutePath;
+    }
+
+    public static function getRootFolder() {
+        return __DIR__ . '/../../../../../../web/';
     }
 }

@@ -66,7 +66,7 @@ class UploadController extends Controller
     {
         try {
             $cropHandler = $this->get('juice_upload_bundle.handler.crop');
-            $result = $cropHandler->cropImage($this->getRequest(), $_POST['cordinates'], $_POST['file']);
+            $result = $cropHandler->cropImage($_POST['cordinates'], $_POST['file']);
         } catch (\Exception $e) {
             $result = array('status' => 'error', 'error' => $e->getMessage());
         }

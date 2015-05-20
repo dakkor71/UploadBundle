@@ -17,7 +17,7 @@ var uploadedImages = new Array();
 if (uploadErrors == false) {}
 var uploadView = Backbone.View.extend({
 
-    requiredPaths : ["crop", "upload"],
+    requiredPaths : ["crop", "upload", "remote"],
     requiredFormData : [],
 
     paths : {},
@@ -85,7 +85,7 @@ var uploadView = Backbone.View.extend({
             $element = $(this);
             $(this).focusout(function() {
                 $.ajax({
-                    url: '/copy_remote_file',
+                    url: self.paths.remote,
                     data: {
                         fileUrl: $(this).val(),
                         kind: 'image'
@@ -196,7 +196,8 @@ var uploadView = Backbone.View.extend({
 
         //and modal on close
         $('.mask').click(function ($container) {
-            self.removePopup($container)
+            self.removePopup($container);
+            self.resetCordinates();
         });
 
         //init crop after image is loaded
@@ -223,14 +224,8 @@ var uploadView = Backbone.View.extend({
 
     cropInit: function(ratio , minSize , size) {
         var self = this;
-        $preview = $('#preview-pane'),
-        $pcnt = $('#preview-pane .preview-container'),
-        $pimg = $('#preview-pane .preview-container img'),
 
-        xsize = $pcnt.width(),
-        ysize = $pcnt.height();
-
-        $('#cropTarget').Jcrop({
+        $Jcrop = $('#cropTarget').Jcrop({
             onSelect : self.updateCordinates,
             onChange : self.updateCordinates,
             onRelease : self.resetCordinates,
@@ -279,6 +274,8 @@ var uploadView = Backbone.View.extend({
                     console.log($container.data('callback'));
                     self[$container.data('callback')]($container, uploadedImages[0]);
                     self.removePopup($container);
+                } else {
+                    alert(data.error);
                 }
             }
         });

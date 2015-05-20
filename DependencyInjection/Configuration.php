@@ -28,6 +28,9 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('final_upload_dir')
                     ->defaultValue('media')
                 ->end()
+                ->scalarNode('absolute_path')
+                    ->defaultTrue()
+                ->end()
             ->end()
         ;
 

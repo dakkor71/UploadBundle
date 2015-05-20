@@ -39,7 +39,7 @@ abstract class UploadHandler
             'success' => true,
             'params' => array(
                 'fileName' => $this->tmpFileName,
-                'path' => '/' . $this->getTmpFileFolder() . '/' . $this->tmpFileName
+                'path' => (Globals::getAbsolutePath() ? '/' : '') . $this->getTmpFileFolder() . $this->tmpFileName
             )
         );
 
@@ -51,7 +51,7 @@ abstract class UploadHandler
     }
 
     public function getTargetFilePath() {
-        $targetPath = $_SERVER['DOCUMENT_ROOT'] . $this->getTmpFileFolder();
+        $targetPath = Globals::getRootFolder() . $this->getTmpFileFolder();
         return $targetPath . $this->tmpFileName;
     }
 
@@ -94,7 +94,7 @@ abstract class UploadHandler
         $extension = $fileInfo['extension'];
         $tmpName = hash('sha256', microtime() . rand()) . '.' . $extension;
 
-        while (is_file($_SERVER['DOCUMENT_ROOT'] . $this->getTmpFileFolder() . $tmpName)) {
+        while (is_file(Globals::getRootFolder() . $this->getTmpFileFolder() . $tmpName)) {
             $tmpName = hash('sha256', microtime() . rand()) . '.' . $extension;
         }
 
@@ -140,9 +140,9 @@ abstract class UploadHandler
     {
         $excludedFiles = array('.', '..', '.gitignore', '.gitkeep');
         $checkTime = time() - 60 * 60 * 10;
-        if ($handle = opendir($_SERVER['DOCUMENT_ROOT'] . '/' . $this->getTmpFileFolder())) {
+        if ($handle = opendir(Globals::getRootFolder() . $this->getTmpFileFolder())) {
             while (false !== ($entry = readdir($handle))) {
-                if (!in_array($entry, $excludedFiles) && filemtime($_SERVER['DOCUMENT_ROOT'] . '/' . $this->getTmpFileFolder() . $entry) < $checkTime) {
+                if (!in_array($entry, $excludedFiles) && filemtime(Globals::getRootFolder() . $this->getTmpFileFolder() . $entry) < $checkTime) {
                     $this->deleteTmpFile($entry);
                 }
             }

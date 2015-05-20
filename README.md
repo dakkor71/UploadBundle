@@ -49,10 +49,13 @@ twig:
         - 'JuiceUploadBundle::default_form_fields.html.twig'
         
 juice_upload:
+    absolute_path: true
     tmp_upload_dir: "uploads"
     final_upload_dir: "media"
     
 ```
+
+If your symfony2 is in subfolder you have to change absolute_path to false and also add base metatag to main template
 
 ### Main twig layout
 

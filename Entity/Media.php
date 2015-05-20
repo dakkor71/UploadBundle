@@ -55,12 +55,12 @@ class Media
 
     protected function getFinalUploadRootDir()
     {
-        return __DIR__ . '/../../../../../../web/' . $this->getFinalFolderName();
+        return Globals::getRootFolder() . $this->getFinalFolderName();
     }
 
     protected function getTmpUploadRootDir($path)
     {
-        return __DIR__ . '/../../../../../../web/' . $this->getTmpFolderName() . '/' . $path;
+        return Globals::getRootFolder() . $this->getTmpFolderName() . '/' . $path;
     }
 
     public function removeFile($file)
@@ -118,7 +118,7 @@ class Media
         if (empty($this->file)) {
             return null;
         }
-        return '/' . $this->getFinalFolderName() . '/' . $this->file;
+        return (Globals::getAbsolutePath() ? '/' : '') . $this->getFinalFolderName() . '/' . $this->file;
     }
 
     /**

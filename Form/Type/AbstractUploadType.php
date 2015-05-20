@@ -34,12 +34,12 @@ class AbstractUploadType extends AbstractType
             }
         }
 
-        $view->vars['tmpFolder'] = Globals::getTmpUploadDir();
-        $view->vars['finalFolder'] = Globals::getFinalUploadDir();
+        $view->vars['tmpFolder'] = (Globals::getAbsolutePath() ? '/' : '') . Globals::getTmpUploadDir();
+        $view->vars['finalFolder'] = (Globals::getAbsolutePath() ? '/' : '') . Globals::getFinalUploadDir();
     }
 
     protected function addFilter(&$view) {
-        if (!isset($view->vars['attr']['filter'])) {
+        if (!isset($view->vars['attr']['filter']) || empty($view->vars['attr']['filter'])) {
             throw new NotFoundHttpException("You need to define filter name");
         }
 

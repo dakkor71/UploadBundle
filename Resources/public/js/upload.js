@@ -200,7 +200,7 @@ var uploadView = Backbone.View.extend({
         cropImage = new Image();
         cropImage.onload = function() {
             $('.popup .popup-body img').removeClass('hidden');
-            self.cropInit($container.data('ratio') , minSize ,  size);
+            self.cropInit($container.data('ratio') , minSize ,  size, this);
         };
 
         cropImage.src = currentPhoto.path;
@@ -218,7 +218,7 @@ var uploadView = Backbone.View.extend({
 
     },
 
-    cropInit: function(ratio , minSize , size) {
+    cropInit: function(ratio , minSize , size, image) {
         var self = this;
 
         $Jcrop = $('#cropTarget').Jcrop({
@@ -228,6 +228,7 @@ var uploadView = Backbone.View.extend({
             aspectRatio: ratio,
             trueSize : [size['width'] , size['height']],
             minSize : [minSize['width'] , minSize['height']],
+            setSelect:   [ 0, 0, image.width, image.height ],
             boxWidth: 568,
             boxHeight: 568
         });

@@ -9,6 +9,13 @@
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
+    <script>
+        var juiceUploadBundlePaths = {
+            upload: '{{ path('jub_upload_file') }}',
+            crop: '{{ path('jub_crop_file') }}',
+            remote: '{{ path('jub_copy_remote_file') }}'
+        }
+    </script>
 {% endblock %}
 
 

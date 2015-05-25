@@ -25,10 +25,21 @@ abstract class UploadHandler
 
         $this->setRemoteStatus();
         $this->setTmpFileName();
+        $this->addFolders();
     }
 
     public function __destruct() {
         $this->clearFiles();
+    }
+
+    public function addFolders() {
+        if (!is_dir($this->getFinalFileFolder())) {
+            mkdir($this->getFinalFileFolder());
+        }
+
+        if (!is_dir($this->getTmpFileFolder())) {
+            mkdir($this->getTmpFileFolder());
+        }
     }
 
     public function addTmpFile() {
@@ -48,6 +59,10 @@ abstract class UploadHandler
 
     public function getTmpFileFolder() {
         return Globals::getTmpUploadDir() . '/';
+    }
+
+    public function getFinalFileFolder() {
+        return Globals::getFinalUploadDir() . '/';
     }
 
     public function getTargetFilePath() {

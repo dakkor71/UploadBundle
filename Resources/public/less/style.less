@@ -20,7 +20,7 @@
     background: white;
     border: 5px solid black;
     padding: 20px;
-    z-index: 20;
+    z-index: 9999;
 
     img {
         width: 100%;
@@ -48,19 +48,6 @@
 }
 
 /*****************************************************
-    PREVIEW
-*****************************************************/
-.preview {
-    width: 200px;
-}
-
-.gallery_container {
-    .preview {
-        width: 300px;
-    }
-}
-
-/*****************************************************
     UPLOAD
 *****************************************************/
 .juice_upload {
@@ -69,7 +56,7 @@
     min-width: 34px;
 
     .juice_upload_controls {
-        margin: 0 0 20px 10px;
+        margin: 0 0 20px 0px;
 
         .juice_upload_button_container {
             width: 150px;
@@ -95,12 +82,6 @@
 
     }
 
-    .juice_upload_collection_container {
-        > div {
-            float: left;
-        }
-    }
-
     .form-control {
         height: auto;
         min-height: 34px;
@@ -114,9 +95,14 @@
         }
     }
 
+    .juice_upload_collection {
+        > div {
+            float: left;
+        }
+    }
+
     .juice_upload_item {
-//        float: left;
-        margin: 0 10px;
+        margin: 0 10px 0 0;
         position: relative;
 
         .juice_upload_single_file {
@@ -130,49 +116,60 @@
             }
         }
 
-        .preview {
+        .juice_upload_form_container {
             position: relative;
-            overflow: hidden;
-        }
 
-        .edit_layer {
-            -webkit-box-sizing: content-box;
-            -moz-box-sizing: content-box;
-            box-sizing: content-box;
+            .file_container {
+                position: relative;
+                z-index: 20;
+            }
 
-            background-color: #000000;
-            display: none;
-            width: 100%;
-            height: 100%;
-            padding: 0 20px 50px 0;
-            position: absolute;
-            top: -10px;
-            left: -10px;
+            .edit_layer {
+                -webkit-box-sizing: content-box;
+                -moz-box-sizing: content-box;
+                box-sizing: content-box;
 
-            .buttons {
+                z-index: 10;
+                background-color: #000000;
+                display: none;
+                width: 100%;
+                height: 100%;
+                padding: 0 20px 50px 0;
                 position: absolute;
-                bottom: 10px;
-                left: 10px;
-                width: 280px;
+                top: -10px;
+                left: -10px;
 
-                .button {
-                    width: 20px;
-                    height: 20px;
-                    background-color: white;
-                    cursor: pointer;
-                    opacity: 0.5;
-                    text-align: center;
-                    float: left;
-                    margin-right: 10px;
+                .buttons {
+                    position: absolute;
+                    bottom: 10px;
+                    left: 10px;
+                    width: 280px;
 
-                    span {
-                        font-size: 15px;
-                        line-height: 20px;
+                    .button {
+                        width: 20px;
+                        height: 20px;
+                        background-color: white;
+                        cursor: pointer;
+                        opacity: 0.5;
+                        text-align: center;
+                        float: left;
+                        margin-right: 10px;
+
+                        span {
+                            font-size: 15px;
+                            line-height: 20px;
+                        }
+
+                        &:hover {
+                            opacity: 1;
+                        }
                     }
+                }
+            }
 
-                    &:hover {
-                        opacity: 1;
-                    }
+            &:hover {
+                .edit_layer {
+                    display: block;
                 }
             }
         }
@@ -180,21 +177,8 @@
         img {
             width: 100%;
         }
-
-        .hidden_form {
-            display: none;
-        }
-
-        &:hover {
-            .preview {
-                z-index: 20;
-            }
-            .edit_layer {
-                z-index: 10;
-                display: block;
-            }
-        }
     }
+
 }
 
 .hidden_form {

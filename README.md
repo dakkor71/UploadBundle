@@ -1,5 +1,9 @@
 ## Documentation
 
+**TODO:**
+
+> documentation outdated
+
 ### Composer
 
 ``` html
@@ -109,11 +113,8 @@ uploadView = new customUploadView({
 ``` php
 
     /**
-     * @ORM\ManyToMany(targetEntity="GalleryItem", cascade={"persist", "remove"}, orphanRemoval=true)
-     * @ORM\JoinTable(name="upload_images",
-     *      joinColumns={@ORM\JoinColumn(name="upload_id", referencedColumnName="id", onDelete="cascade")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="image_id", referencedColumnName="id", unique=true, onDelete="cascade")}
-     *      )
+     * @ORM\OneToMany(targetEntity="GalleryItem", mappedBy="gallery", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\OrderBy({"position" = "ASC"})
      **/
     private $images;
 
@@ -121,22 +122,35 @@ uploadView = new customUploadView({
     {
         $this->images = new ArrayCollection();
     }
+
+    public function getImages() {
+        return $this->images;
+    }
+
+    public function addImage(GalleryItem $galleryItem)
+    {
+        $galleryItem->setGallery($this);
+        $this->images->add($galleryItem);
+    }
+
+    public function removeImage(GalleryItem $galleryItem)
+    {
+        $this->images->removeElement($galleryItem);
+    }
     
 ```
 
 ##### gallery container form field
 
 ``` php
-    ->add('images', 'juice_gallery_field', array(
-        'type' => new ImagesType(),
-        'label' => 'Gallery',
+    ->add('images', 'juice_upload_gallery_field', array(
+        'type' => new GalleryItemType(),
+        'label' => 'Images',
         'field_attr' => array(
-            'filter' => 'home_big',
+            'filter' => 'filter',
         )
     ))
 ```
-
-If you want to add some custom class to upload container check full options
 
 ##### gallery container form field full
 
@@ -160,7 +174,109 @@ If you want to add some custom class to upload container check full options
 
 ##### Gallery item entity:
 
-Add single image to gallery child entity
+``` php
+
+    <?php
+
+    namespace AppBundle\Entity;
+
+    use Doctrine\ORM\Mapping as ORM;
+    use Doctrine\Common\Collections\ArrayCollection;
+
+    /**
+     * Gallery
+     *
+     * @ORM\Table(name="gallery_item")
+     * @ORM\Entity()
+     */
+    class GalleryItem
+    {
+        /**
+         * @var integer
+         *
+         * @ORM\Column(name="id", type="integer")
+         * @ORM\Id
+         * @ORM\GeneratedValue(strategy="AUTO")
+         */
+        private $id;
+
+        /**
+         * @ORM\OneToOne(targetEntity="\Juice\UploadBundle\Entity\Media", cascade={"persist", "remove"}, orphanRemoval=true)
+         * @ORM\JoinColumn(name="image_id", referencedColumnName="id", onDelete="SET NULL", nullable=true)
+         */
+        private $image;
+
+        /**
+         * @ORM\ManyToOne(targetEntity="Day", inversedBy="images")
+         * @ORM\JoinColumn(name="gallery_id", referencedColumnName="id")
+         */
+        private $gallery;
+
+        /**
+         * @var string
+         *
+         * @ORM\Column(name="position", type="integer")
+         */
+        private $position;
+
+        public function getId()
+        {
+            return $this->id;
+        }
+
+        public function setImage($image)
+        {
+            //clear image object if new image is null on empty
+            if ($image == NULL || $image->getFile() == NULL) {
+                $this->image = NULL;
+                return $this;
+            }
+
+            if ($this->image == NULL) {
+                $this->image = $image;
+            } else {
+                $this->image->setFile($image->getFile());
+            }
+
+            return $this;
+        }
+
+        public function getImage()
+        {
+            return $this->image;
+        }
+
+        public function setPosition($position)
+        {
+            $this->position = $position;
+
+            return $this;
+        }
+
+        public function getPosition()
+        {
+            return $this->position;
+        }
+
+        public function setGallery($gallery)
+        {
+            return $this->gallery = $gallery;
+        }
+    }
+```
+
+### Gallery item form
+
+``` php
+     $builder
+         ->add('image', 'juice_upload_gallery_child_field', array(
+             'label' => false
+         ))
+         ->add('position', 'hidden', array(
+             'attr' => array('class' => 'position')
+         ))
+     ;
+```
 
 ### Gallery Sorting
 
@@ -223,7 +339,7 @@ position form fields should contain proper class
 min options
 
 ``` php
-    ->add('photo', 'juice_single_image_field', array(
+    ->add('photo', 'juice_upload_image_field', array(
         'field_attr' => array(
             'filter' => 'home_big',
         )
@@ -235,7 +351,7 @@ If you want to add some custom class to upload container check full options
 full options
 
 ``` php
-    ->add('photo', 'juice_single_image_field', array(
+    ->add('photo', 'juice_upload_image_field', array(
         'label' => 'main label name',
         'button_label' => 'button name', // DEFAULT 'Upload' | upload button label
         'accept' => '.png, .jpg', // DEFAULT '.jpg, .png' | upload button label
@@ -292,13 +408,13 @@ full options
 min options
 
 ``` php
-    ->add('file', 'juice_single_file_field')
+    ->add('file', 'juice_upload_file_field')
 ```
 
 full options
 
 ``` php
-    ->add('file', 'juice_single_file_field', array(
+    ->add('file', 'juice_upload_file_field', array(
         'label' => 'Upload file', // main label
         'button_label' => 'file upload', // DEFAULT default 'Upload' | upload button label
         'accept' => '.txt',

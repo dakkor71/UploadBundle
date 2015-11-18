@@ -295,7 +295,7 @@ var uploadView = Backbone.View.extend({
 
     initSorting: function() {
         var self = this;
-        $(".juice_upload_collection_container").sortable({
+        $(".juice_upload_collection").sortable({
             update : function() {
                 self.sortItems();
             }
@@ -303,62 +303,60 @@ var uploadView = Backbone.View.extend({
     },
 
     sortItems : function() {
-        this.$el.find('.juice_upload_collection_container > div').each(function() {
+        this.$el.find('.juice_upload_collection > div').each(function() {
             $(this).find('.position').attr('value' , $(this).index() + 1);
         });
     },
 
     removeItem : function(e) {
-        if ($(e.currentTarget).closest('.juice_upload_collection_container').size()) {
+        if ($(e.currentTarget).closest('.juice_upload_collection').size()) {
             //remove from gallery
             $(e.currentTarget).closest('.juice_upload_gallery_item').remove();
         } else {
             //remove single file and image
-            $(e.currentTarget).closest('.juice_upload_item').find('.juice_upload_form_container').empty();
+            $(e.currentTarget).closest('.juice_upload_item').find('.file_container').empty();
         }
     },
 
-    handleSingleImage: function($container, params) {
+    handleImage: function($container, params) {
         var html = imageTpl({
             'inputName' : $container.data('input-name'),
             'fileName' : params.fileName,
             'fileNameWithPath' : params.path + '?' + Math.random()
         });
 
-        $container.find('.juice_upload_form_container').html(html);
+        $container.find('.file_container').html(html);
 
         this.delegateEvents();
     },
 
-    handleSingleFile: function($container, params) {
+    handleFile: function($container, params) {
         var html = fileTpl({
             'inputName' : $container.data('input-name'),
             'fileName' : params.fileName
         });
 
-        $container.find('.juice_upload_form_container').html(html);
+        console.log(123);
+
+        $container.find('.file_container').html(html);
 
         this.delegateEvents();
     },
 
     handleGalleryImage: function($container, params) {
-        // Get the data-prototype explained earlier
         var prototype = $container.data('prototype');
-
-        // Replace '__name__' in the prototype's HTML to
-        // instead be a number based on how many items we have
         var newForm = prototype.replace(/__name__/g, 1000 + $container.find('.juice_upload_item').length);
+        var $newForm = $(newForm);
 
         fileNameWithPath = params.path + '?' + Math.random();
 
-        var $newForm = $(newForm);
-        $newForm.addClass('juice_upload_gallery_item');
 
-        $newForm.find('.juice_upload_form_container input').attr('value', params.fileName);
-        $newForm.find('.juice_upload_form_container.preview').append('<img src="' + fileNameWithPath  + '"/>');
+        $newForm.addClass('juice_upload_gallery_item');
+        $newForm.find('.file_container input').attr('value', params.fileName);
+        $newForm.find('.file_container').append('<img src="' + fileNameWithPath  + '"/>');
         $newForm.find('input.position').attr('value', $('.juice_upload_item').length+1);
 
-        $container.find('.juice_upload_collection_container').append($newForm);
+        $container.find('.juice_upload_collection').append($newForm);
 
         this.delegateEvents();
     }

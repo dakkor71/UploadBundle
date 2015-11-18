@@ -14,27 +14,8 @@ class BaseFileType extends AbstractUploadType
         $this->addVars($view, $options);
     }
 
-    /**
-     * @param OptionsResolverInterface $resolver
-     */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
-        $resolver->setDefaults(array(
-            'default_data' => array(
-                'data-form-kind' => 'file',
-                'data-callback' => 'handleSingleFile',
-                'data-crop' => 'false',
-            ),
-            'upload_class' => 'juice_upload',
-            'button_label' => 'Upload',
-            'accept' => '',
-
-        ));
-    }
-
-
     public function getName()
     {
-        return 'juice_file_type';
+        return 'juice_upload_file_type';
     }
 }

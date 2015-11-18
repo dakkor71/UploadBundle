@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
 use Liip\ImagineBundle\Imagine\Filter\FilterConfiguration;
 
-class BaseGalleryChildType extends AbstractUploadType
+class BaseGalleryItemType extends AbstractUploadType
 {
     public function __construct(FilterManager $filterManager) {
         $this->filterConfiguration = $filterManager->getFilterConfiguration();
@@ -33,6 +33,7 @@ class BaseGalleryChildType extends AbstractUploadType
             ),
             'upload_class' => 'juice_upload',
             'button_label' => 'Upload',
+            'button_class' => '',
             'accept' => '',
             'multi' => true
         ));
@@ -40,6 +41,6 @@ class BaseGalleryChildType extends AbstractUploadType
 
     public function getName()
     {
-        return 'juice_gallery_image_type';
+        return 'juice_upload_gallery_item_type';
     }
 }

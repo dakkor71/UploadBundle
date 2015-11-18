@@ -26,23 +26,18 @@ class BaseImageType extends AbstractUploadType
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
+        parent::setDefaultOptions($resolver);
+
         $resolver->setDefaults(array(
             'default_data' => array(
                 'data-form-kind' => 'image',
-                'data-callback' => 'handleSingleImage',
-                'data-crop' => 'false'
-            ),
-            'button_label' => '',
-            'accept' => '',
-            'multi' => false
-
+                'data-callback' => 'handleImage'
+            )
         ));
     }
 
-
-
     public function getName()
     {
-        return 'juice_image_type';
+        return 'juice_upload_image_type';
     }
 }

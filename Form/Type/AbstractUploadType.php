@@ -4,6 +4,7 @@ namespace Juice\UploadBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
 use Liip\ImagineBundle\Imagine\Filter\FilterConfiguration;
@@ -25,6 +26,7 @@ class AbstractUploadType extends AbstractType
 
     public function addVars(&$view, $options) {
         $view->vars['button_label'] = $options['button_label'];
+        $view->vars['button_class'] = $options['button_class'];
         $view->vars['accept'] = $options['accept'];
         $view->vars['multi'] = isset($options['multi']) ? $options['multi'] : false;
 
@@ -51,6 +53,24 @@ class AbstractUploadType extends AbstractType
 
         $view->vars['attr']['data-ratio'] = $ratio;
         $view->vars['attr']['data-minSize'] = $minSize;
+    }
+
+    /**
+     * @param OptionsResolverInterface $resolver
+     */
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'default_data' => array(
+                'data-form-kind' => 'file',
+                'data-callback' => 'handleFile',
+                'data-crop' => 'false'
+            ),
+            'button_label' => '',
+            'button_class' => '',
+            'accept' => '',
+            'multi' => false
+        ));
     }
 
     public function getName()

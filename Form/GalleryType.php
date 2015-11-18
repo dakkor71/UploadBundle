@@ -50,6 +50,7 @@ class GalleryType extends AbstractUploadType
                 )
             ),
             'button_label' => 'Upload',
+            'button_class' => '',
             'accept' => '',
             'multi' => true,
             'attr' => array(
@@ -57,11 +58,12 @@ class GalleryType extends AbstractUploadType
             ),
             'allow_add' => true,
             'allow_delete' => true,
+            'by_reference' => false
         ));
     }
 
     public function getName()
     {
-        return 'juice_gallery_field';
+        return 'juice_upload_gallery_field';
     }
 }

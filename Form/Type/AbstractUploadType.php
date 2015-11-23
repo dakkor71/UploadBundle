@@ -51,6 +51,11 @@ class AbstractUploadType extends AbstractType
         $ratio = $width / $heigth;
         $minSize = '({width : ' . $width . ',height : ' . $heigth . '})';
 
+
+        if(isset($view->vars['attr']['data-form-same-size']) && $view->vars['attr']['data-form-same-size']) {
+            $view->vars['attr']['data-form-size'] = $width . ',' . $heigth;
+        }
+
         $view->vars['attr']['data-ratio'] = $ratio;
         $view->vars['attr']['data-minSize'] = $minSize;
     }

@@ -18,10 +18,11 @@ abstract class UploadHandler
 
     protected $kind = 'file';
 
-    public function __construct($uploadedFile, $originalFileName, array $files) {
+    public function __construct($uploadedFile, $originalFileName, array $files, array $post) {
         $this->uploadedFile = $uploadedFile;
         $this->originalFileName = $originalFileName;
         $this->files = $files;
+        $this->post = $post;
 
         $this->setRemoteStatus();
         $this->setTmpFileName();
@@ -72,6 +73,16 @@ abstract class UploadHandler
 
     public function checkFile()
     {
+
+        if (isset($this->post['size'])) {
+            $requestedSize = explode(',', $this->post['size']);
+            list($width, $height) = getimagesize($this->uploadedFile);
+
+            if($width != $requestedSize[0] && $height != $requestedSize[1]) {
+                Throw new \Exception('Wrong size. Requested: ' . $requestedSize[0] . 'x' . $requestedSize[1]);
+            }
+        }
+
         if (!$this->remote && $this->files['file']['error'] != 0) {
             Throw new \Exception($this->uploadErrorCodeToMessage($this->files['file']['error']));
         }

@@ -35,7 +35,7 @@ var uploadView = Backbone.View.extend({
             self.initUploader(this);
         });
 
-        self.initRemoveUpload();
+        self.initRemoteUpload();
         self.initSorting();
     },
     
@@ -75,7 +75,7 @@ var uploadView = Backbone.View.extend({
         $el.fileupload(options);
     },
 
-    initRemoveUpload: function() {
+    initRemoteUpload: function() {
         self = this;
         $('[data-remote="true"]').each(function() {
             $element = $(this);
@@ -170,7 +170,7 @@ var uploadView = Backbone.View.extend({
 
         if(minSize['width'] == size['width'] && minSize['height'] == size['height']) {
             //dont crop if uploaded image is same size as minimal
-            this[$container.data('callback')]($container, currentPhoto.fileName);
+            this[$container.data('callback')]($container,  currentPhoto);
             uploadedImages.shift();
             if(uploadedImages.length > 0) {
                 self.cropHandler($container);

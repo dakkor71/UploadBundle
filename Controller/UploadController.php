@@ -27,10 +27,10 @@ class UploadController extends Controller
 
         switch ($_POST['kind']) {
             case 'image':
-                $uploadHandler = new ImageUploadHandler($tmpFile, $originalFileName, $_FILES);
+                $uploadHandler = new ImageUploadHandler($tmpFile, $originalFileName, $_FILES, $_POST);
                 break;
             case 'file':
-                $uploadHandler = new FileUploadHandler($tmpFile, $originalFileName, $_FILES);
+                $uploadHandler = new FileUploadHandler($tmpFile, $originalFileName, $_FILES, $_POST);
                 break;
         }
 
@@ -51,7 +51,7 @@ class UploadController extends Controller
         $fileUrl = $_POST['fileUrl'];
         $filename = basename($fileUrl);
 
-        $uploadHandler = new ImageUploadHandler($fileUrl, $filename, $_FILES);
+        $uploadHandler = new ImageUploadHandler($fileUrl, $filename, $_FILES, $_POST);
 
         try {
             $result = $uploadHandler->addTmpFile();

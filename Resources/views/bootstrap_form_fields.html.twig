@@ -81,7 +81,7 @@
                     {% set finalPath = final_upload_dir ~ "/" ~ form.vars.value %}
                     {% set tmpPath = tmp_upload_dir ~ "/" ~ form.vars.value %}
 
-                    {% if form.parent.vars.value.id and finalPath | checkFile %}
+                    {% if finalPath | checkFile %}
                         <img src="/{{ finalPath }}" />
                     {%  elseif tmpPath | checkFile%}
                         <img src="/{{ tmpPath }}" />

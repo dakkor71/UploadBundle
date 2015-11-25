@@ -43,11 +43,6 @@ class Media
         return $this->id;
     }
 
-    protected function getTmpFolderName()
-    {
-        return Globals::getTmpUploadDir();
-    }
-
     protected function getFinalFolderName()
     {
         return Globals::getFinalUploadDir();
@@ -55,12 +50,12 @@ class Media
 
     protected function getFinalUploadRootDir()
     {
-        return Globals::getRootFolder() . $this->getFinalFolderName();
+        return Globals::getFinalUploadRootDir();
     }
 
     protected function getTmpUploadRootDir($path)
     {
-        return Globals::getRootFolder() . $this->getTmpFolderName() . '/' . $path;
+        return Globals::getTmpUploadRootDir($path);
     }
 
     public function removeFile($file)

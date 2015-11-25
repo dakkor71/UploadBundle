@@ -1,12 +1,12 @@
 var uploadErrors = false;
 
 if (typeof Backbone == "undefined") {
-    self.alertCallback('Please add Backbone.js');
+    alert('Please add Backbone.js');
     uploadErrors = true;
 }
 
 if (typeof _ == "undefined") {
-    self.alertCallback('Please add Underscore.js');
+    alert('Please add Underscore.js');
     uploadErrors = true;
 }
 
@@ -68,7 +68,7 @@ var uploadView = Backbone.View.extend({
                 self.uploadSuccessHandler(data.result, $container);
             },
             'fail' : function(e, data) {
-                //self.alertCallback('The error was: ' + errorType);
+                self.alertCallback('The error was: ' + errorType);
             }
         });
 
@@ -99,13 +99,13 @@ var uploadView = Backbone.View.extend({
     validData : function($container , options) {
         for(var i in this.requiredFormData) {
             if(!options.formData[this.requiredFormData[i]]) {
-                self.alertCallback('Please set file ' + this.requiredFormData[i]);
+                this.alertCallback('Please set file ' + this.requiredFormData[i]);
                 return false;
             }
         }
 
         if(!$container.data('callback') || !typeof(this[$container.data('callback')])) {
-            self.alertCallback('defind callback');
+            this.alertCallback('defind callback');
             return false;
         }
 

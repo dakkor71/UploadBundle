@@ -41,4 +41,14 @@ class Globals
     public static function getRootFolder() {
         return __DIR__ . '/../../../../../../web/';
     }
+
+    public static function getFinalUploadRootDir()
+    {
+        return self::getRootFolder() . self::getFinalUploadDir();
+    }
+
+    public static function getTmpUploadRootDir($path)
+    {
+        return self::getRootFolder() . self::getTmpUploadDir() . '/' . $path;
+    }
 }

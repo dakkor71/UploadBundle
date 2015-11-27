@@ -82,9 +82,9 @@
                     {% set tmpPath = tmp_upload_dir ~ "/" ~ form.vars.value %}
 
                     {% if finalPath | checkFile %}
-                        <img src="/{{ finalPath }}" />
+                        <img src="{{ finalPath | imagine_filter(form.vars.attr.filter) }}" />
                     {%  elseif tmpPath | checkFile%}
-                        <img src="/{{ tmpPath }}" />
+                        <img src="{{ tmpPath | imagine_filter(form.vars.attr.filter) }}" />
                     {%  else %}
                         Image ERROR!!!
                     {%  endif %}

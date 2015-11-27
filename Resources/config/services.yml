@@ -18,9 +18,9 @@ services:
         arguments: [ "@liip_imagine.filter.manager" ]
 
     juice_upload.juice_upload_gallery_child_field:
-            class: Juice\UploadBundle\Form\GalleryItemType
-            tags:
-                - { name: form.type, alias: juice_upload_gallery_child_field }
+        class: Juice\UploadBundle\Form\GalleryItemType
+        tags:
+            - { name: form.type, alias: juice_upload_gallery_child_field }
 
     #types
     juice_upload.juice_upload_image_type:

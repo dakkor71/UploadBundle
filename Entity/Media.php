@@ -104,16 +104,20 @@ class Media
         $this->{"$field"} = $fileName;
     }
 
-    /*
-     * //////////////////////////////////////////////////////
-     */
-
     public function getWebPath()
     {
         if (empty($this->file)) {
             return null;
         }
         return (Globals::getAbsolutePath() ? '/' : '') . $this->getFinalFolderName() . '/' . $this->file;
+    }
+
+    public function getPath()
+    {
+        if (empty($this->file)) {
+            return null;
+        }
+        return $this->getFinalFolderName() . '/' . $this->file;
     }
 
     /**

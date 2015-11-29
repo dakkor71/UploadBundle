@@ -78,7 +78,7 @@ abstract class UploadHandler
             $requestedSize = explode(',', $this->post['size']);
             list($width, $height) = getimagesize($this->uploadedFile);
 
-            if($width != $requestedSize[0] && $height != $requestedSize[1]) {
+            if($width != $requestedSize[0] || $height != $requestedSize[1]) {
                 Throw new \Exception('Wrong size. Requested: ' . $requestedSize[0] . 'x' . $requestedSize[1]);
             }
         }

@@ -45,19 +45,21 @@ class AbstractUploadType extends AbstractType
             throw new NotFoundHttpException("You need to define filter name");
         }
 
-        $filter = $view->vars['attr']['filter'];
-        $config = $this->filterConfiguration->get($filter);
-        list($width , $heigth) = $config['filters']['thumbnail']['size'];
-        $ratio = $width / $heigth;
-        $minSize = '({width : ' . $width . ',height : ' . $heigth . '})';
+        if(isset($config['filters']['thumbnail'])) {
+            $filter = $view->vars['attr']['filter'];
+            $config = $this->filterConfiguration->get($filter);
+            list($width , $heigth) = $config['filters']['thumbnail']['size'];
+            $ratio = $width / $heigth;
+            $minSize = '({width : ' . $width . ',height : ' . $heigth . '})';
 
 
-        if(isset($view->vars['attr']['data-form-same-size']) && $view->vars['attr']['data-form-same-size']) {
-            $view->vars['attr']['data-form-size'] = $width . ',' . $heigth;
+            if(isset($view->vars['attr']['data-form-same-size']) && $view->vars['attr']['data-form-same-size']) {
+                $view->vars['attr']['data-form-size'] = $width . ',' . $heigth;
+            }
+
+            $view->vars['attr']['data-ratio'] = $ratio;
+            $view->vars['attr']['data-minSize'] = $minSize;
         }
-
-        $view->vars['attr']['data-ratio'] = $ratio;
-        $view->vars['attr']['data-minSize'] = $minSize;
     }
 
     /**

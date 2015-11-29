@@ -61,6 +61,7 @@ var uploadView = Backbone.View.extend({
             'url' :  self.paths.upload,
             'autoUpload' : true,
             'dataType': 'json',
+            'dropZone': null,
             progressall: function (e, data) {
                 self.progressHandler(e, data, $container);
             },
